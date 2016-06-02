@@ -1,8 +1,12 @@
 {
-  "test": [
+  "templates": [
     {
       "quest": "gogo",
       "uid": "b5nazqpnw65mxcbqlmiz",
+      "altro": "asd"
+    },{
+      "quest": "asdddaa",
+      "uid": "b5nazqgdgg5mxcbqlmiz",
       "altro": "asd"
     }
   ],
