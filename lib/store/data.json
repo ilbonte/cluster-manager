@@ -4,7 +4,8 @@
       "quest": "gogo",
       "uid": "b5nazqpnw65mxcbqlmiz",
       "altro": "asd"
-    },{
+    },
+    {
       "quest": "asdddaa",
       "uid": "b5nazqgdgg5mxcbqlmiz",
       "altro": "asd"
@@ -33,6 +34,19 @@
       "location": "pelizzano",
       "name": "trampolini",
       "uid": "8gpfhnrp4as3h5ed70ec"
+    }
+  ],
+  "images": [
+    {
+      "location": "male",
+      "name": "degrado",
+      "uid": "bex4rbwvrehveyl1u85l"
+    },
+    {
+      "type": "docker",
+      "location": "male",
+      "name": "degrado",
+      "uid": "cnmw1gh0y7lnom4lybs1"
     }
   ]
 }
