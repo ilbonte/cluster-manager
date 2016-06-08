@@ -1,4 +1,5 @@
 # ignore packages installed by npm
 node_modules/
 lib/store
+public/node_modules/
 *.tar
