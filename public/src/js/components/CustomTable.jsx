@@ -3,9 +3,13 @@ import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Collapse from 'react-bootstrap/lib/Collapse';
+import Well from 'react-bootstrap/lib/Well';
 
 class CustomTable extends React.Component {
-
+  constructor(){
+    super();
+    this.state = {};
+  }
     render() {
         let myData = [
             {
@@ -22,87 +26,104 @@ class CustomTable extends React.Component {
                 info: "Random text or also better: I wish I had better word, I wish i found some chords thatare in order"
             }
         ];
+        let tableStyle = {
+          "margin": "0 0 40px 0",
+          "width": "100%",
+          "boxShadow": "0 1px 3px rgba(0, 0, 0, 0.2)",
+          "display": "table"
+        };
         return (
-            <div>
-                <TableHeader/>
-                <TableBody data={myData}/>
+            <div style={tableStyle}>
+                <TableHeader>
+                  <TableCell>header</TableCell>
+                  <TableCell>altro header</TableCell>
+                  <TableCell>altro asd</TableCell>
+                </TableHeader>
+
+                  <TableRow  onClick={()=> this.setState({ open: !this.state.open })} >
+                    <TableCell>primo</TableCell>
+                    <TableCell>secondo</TableCell>
+                    <TableCell>terzo</TableCell>
+                  </TableRow>
+                  <Collapse in={this.state.open}>
+                    <div>
+                      <Well>
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                        Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+                      </Well>
+                    </div>
+                  </Collapse>
+
+                  <TableRow>
+                    <TableCell>pbis</TableCell>
+                    <TableCell>sebis</TableCell>
+                    <TableCell>gfdg</TableCell>
+                  </TableRow>
+
             </div>
         );
     }
 
 }
 
+
 class TableHeader extends React.Component {
     render() {
 
-        const {props: {
-                title
-            }} = this
-        return (
-            <Grid>
-                <Row>
-                    <Col xs={3}>
-                        <h2>Header 1</h2>
-                    </Col>
-                    <Col xs={3}>
-                        <h2>Header 2</h2>
-                    </Col>
-                    <Col xs={3}>
-                        <h2>Header 3</h2>
-                    </Col>
-                    <Col xs={3}>
-                        <h2>Header 4</h2>
-                    </Col>
-                </Row>
-            </Grid>
-        );
+        console.log(this.props.children);
+        var headerStyle = {
+          display: "table-row",
+          fontWeight: "900",
+          color: "#ffffff",
+          background: "#ea6153"
+        };
+
+        return (<div style={headerStyle}>{this.props.children}</div>);
+
     }
 }
 
-class TableBody extends React.Component {
+
+class TableRow extends React.Component {
+
+  render() {
+    let rowStyle= {
+      display: "table-row",
+      background: "#f6f6f6"
+    }
+    return (
+      <div style={rowStyle}>
+        {this.props.children}
+
+      </div>
+    );
+  }
+}
+
+class TableCell extends React.Component {
     render() {
-        var crowNodes = this.props.data.map((item) => {
-            let {name, surname, age, born, info} = item;
-            console.log(name);
-            return (<CRow name={name} surname={surname} age={age} born={born} info={info} key={name}/>);
-        });
-
-        return (<div>{crowNodes}</div>);
+      let cellStyle= {
+        padding: "6px 12px",
+        display: "table-cell"
+      }
+        return (<div style={cellStyle}>{this.props.children}</div>);
 
     }
 }
 
-class CRow extends React.Component {
-    constructor() {
-        super();
-        this.state = {};
-    }
-
+class TableTitle extends React.Component {
     render() {
 
-        return (
-            <Grid>
-                <Row onClick={() => this.setState({
-                    open: !this.state.open
-                })}>
-                    <Col xs={3}>{this.props.name}</Col>
-                    <Col xs={3}>{this.props.surname}</Col>
-                    <Col xs={3}>{this.props.age}</Col>
-                    <Col xs={3}>{this.props.born}</Col>
-                </Row>
-                <Row>
-                    <Collapse in={this.state.open}>
-                        <div>
-                            <p>
-                                {this.props.info}
+        console.log(this.props.children);
+        var titleStyle = {
+            color: 'red',
+            fontFamily:"Arial"
+        };
 
-                            </p>
-                        </div>
-                    </Collapse>
-                </Row>
-            </Grid>
-        );
+        return (<h1 style={titleStyle}>{this.props.children}</h1>);
+
     }
 }
+
 
 export default CustomTable;
