@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Collapse from 'react-bootstrap/lib/Collapse';
 import Well from 'react-bootstrap/lib/Well';
+import xhr from 'xhr';
 
 class CustomTable extends React.Component {
   constructor(){

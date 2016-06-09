@@ -5,7 +5,9 @@ import Col from 'react-bootstrap/lib/Col';
 import CustomTable from "./CustomTable.jsx";
 import NewTable from "./NewTable.jsx";
 
+const baseUrl = 'http://localhost:3000';
 export default class Layout extends React.Component {
+
   render () {
     return (
       <div>
@@ -20,10 +22,10 @@ export default class Layout extends React.Component {
         <Grid fluid={true}>
           <Row>
             <Col sm={6}>
-              <NewTable/>
+              <NewTable title={'Images'} getUrl={baseUrl+"/v1/images"}/>
             </Col>
             <Col sm={6}>
-              <NewTable/>
+              <NewTable title={'Instances'} getUrl={baseUrl+"/v1/instances"}/>
             </Col>
           </Row>
         </Grid>

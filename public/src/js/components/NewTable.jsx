@@ -5,11 +5,30 @@ import Col from 'react-bootstrap/lib/Col';
 import Collapse from 'react-bootstrap/lib/Collapse';
 import Panel from 'react-bootstrap/lib/Panel';
 import Well from 'react-bootstrap/lib/Well';
-
+var xhr = require('xhr');
 // Table data as a list of array.
 
 class NewTable extends React.Component {
+    constructor(){
+      super();
+    }
 
+    componentDidMount() {
+      xhr({
+      uri: this.props.getUrl
+
+      }, function (err, resp, body) {
+          // check resp.statusCode
+          if(resp.statusCode===200){
+            console.log(resp);
+            console.log(body);
+          }else{
+            console.log('Error getting data');
+            console.log(err);
+          }
+      });
+
+   }
     render() {
         let myData = [
             {
