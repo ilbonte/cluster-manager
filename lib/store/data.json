@@ -1,52 +1,103 @@
 {
-  "templates": [
-    {
-      "quest": "gogo",
-      "uid": "b5nazqpnw65mxcbqlmiz",
-      "altro": "asd"
-    },
-    {
-      "quest": "asdddaa",
-      "uid": "b5nazqgdgg5mxcbqlmiz",
-      "altro": "asd"
-    }
-  ],
-  "testa": [
-    {
-      "quest": "salvato bis",
-      "uid": "b5nazqpnw65mxcbqlmiz"
-    }
-  ],
-  "testaa": [],
-  "testd": [],
-  "image": [
-    {
-      "location": "new ossana",
-      "name": "la fontana",
-      "uid": "54j2zlilvvzgg392jg7o"
-    },
-    {
-      "location": "pelizzano",
-      "name": "trampolini",
-      "uid": "lp7q5zahs1s1j9c7uk50"
-    },
-    {
-      "location": "pelizzano",
-      "name": "trampolini",
-      "uid": "8gpfhnrp4as3h5ed70ec"
-    }
-  ],
-  "images": [
-    {
-      "location": "male",
-      "name": "degrado",
-      "uid": "bex4rbwvrehveyl1u85l"
-    },
-    {
-      "type": "docker",
-      "location": "male",
-      "name": "degrado",
-      "uid": "cnmw1gh0y7lnom4lybs1"
-    }
-  ]
+    "templates": [{
+        "type": "docker",
+        "fields": {
+            "name": {
+                "type": "string",
+                "required": true,
+                "group": "info"
+            },
+            "imageTag": {
+                "type": "string",
+                "required": true,
+                "group": "generalInfo"
+            },
+            "entrypoint": {
+                "type": "string",
+                "required": false,
+                "group": "generalInfo"
+            },
+            "from": {
+                "type": "string",
+                "required": true,
+                "group": "generalInfo"
+            },
+            "log": {
+                "type": "string",
+                "required": false,
+                "group": "debug"
+            },
+            "status": {
+                "type": "string",
+                "required": false,
+                "group": "debug"
+            },
+            "steps": {
+                "type": "list",
+                "required": false,
+                "group": "generalInfo",
+                "fields": [{
+                    "label": "CMD",
+                    "name": "CMD",
+                    "type": "string"
+                }, {
+                    "label": "action",
+                    "name": "action",
+                    "type": "string"
+                }]
+            },
+            "ports": {
+                "type": "list",
+                "required": false,
+                "group": "network",
+                "fields": [{
+                    "label": "Listening Address",
+                    "name": "exaddress",
+                    "type": "string"
+                }, {
+                    "label": "Host Port",
+                    "name": "export",
+                    "type": "integer"
+                }, {
+                    "label": "Container Port",
+                    "name": "inport",
+                    "type": "integer"
+                }, {
+                    "label": "Protocol",
+                    "name": "protocol",
+                    "type": "string",
+                    "values": ["tcp", "udp", "both"]
+                }]
+            }
+        }
+    }],
+    "testa": [{
+        "quest": "salvato bis",
+        "uid": "b5nazqpnw65mxcbqlmiz"
+    }],
+    "testaa": [],
+    "testd": [],
+    "image": [{
+        "location": "new ossana",
+        "name": "la fontana",
+        "uid": "54j2zlilvvzgg392jg7o"
+    }, {
+        "location": "pelizzano",
+        "name": "trampolini",
+        "uid": "lp7q5zahs1s1j9c7uk50"
+    }, {
+        "location": "pelizzano",
+        "name": "trampolini",
+        "uid": "8gpfhnrp4as3h5ed70ec"
+    }],
+    "images": [{
+        "location": "male",
+        "name": "degrado",
+        "uid": "bex4rbwvrehveyl1u85l"
+    }, {
+        "type": "docker",
+        "location": "male",
+        "name": "degrado",
+        "uid": "cnmw1gh0y7lnom4lybs1"
+    }]
 }

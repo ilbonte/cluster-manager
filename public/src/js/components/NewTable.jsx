@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Collapse from 'react-bootstrap/lib/Collapse';
 import Panel from 'react-bootstrap/lib/Panel';
+import Button from 'react-bootstrap/lib/Button';
 import Well from 'react-bootstrap/lib/Well';
 var xhr = require('xhr');
 // Table data as a list of array.
