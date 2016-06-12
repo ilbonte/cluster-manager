@@ -1,6 +1,7 @@
 # ignore packages installed by npm
 node_modules/
-lib/store
+lib/store/*.json
 public/node_modules/
 *.tar
 *.log
+.idea/
