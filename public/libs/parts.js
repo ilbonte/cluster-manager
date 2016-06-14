@@ -83,7 +83,7 @@ exports.devServer = function(options) {
 
       // Unlike the cli flag, this doesn't set
       // HotModuleReplacementPlugin!
-      //set false to disable hot reload
+      //set to false to disable hot reload
       hot: false,
       inline: true,
 
@@ -199,8 +199,7 @@ exports.extractCSS = function(paths) {
           test: /\.css$/,
           loader: ExtractTextPlugin.extract('style', 'css'),
           include: paths
-        },
-        {
+        },{
          test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, loader: 'url-loader?limit=100000'
       }
       ]
