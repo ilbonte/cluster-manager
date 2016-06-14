@@ -85,43 +85,7 @@
       }
     }
   ],
-  "testa": [
-    {
-      "quest": "salvato bis",
-      "uid": "b5nazqpnw65mxcbqlmiz"
-    }
-  ],
-  "testaa": [],
-  "testd": [],
-  "image": [
-    {
-      "location": "new ossana",
-      "name": "la fontana",
-      "uid": "54j2zlilvvzgg392jg7o"
-    },
-    {
-      "location": "pelizzano",
-      "name": "trampolini",
-      "uid": "lp7q5zahs1s1j9c7uk50"
-    },
-    {
-      "location": "pelizzano",
-      "name": "trampolini",
-      "uid": "8gpfhnrp4as3h5ed70ec"
-    }
-  ],
   "images": [
-    {
-      "location": "male",
-      "name": "degrado",
-      "uid": "bex4rbwvrehveyl1u85l"
-    },
-    {
-      "type": "docker",
-      "location": "male",
-      "name": "degrado",
-      "uid": "cnmw1gh0y7lnom4lybs1"
-    },
     {
       "type": "docker-template",
       "name": "example template",

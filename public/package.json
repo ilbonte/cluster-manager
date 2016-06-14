@@ -1,8 +1,8 @@
 {
-  "name": "react-boilerplate",
+  "name": "cluster-manager",
   "private": true,
-  "version": "2.5.6",
-  "description": "Boilerplate for [SurviveJS - React](http://survivejs.com/react/introduction/)",
+  "version": "0.0.0",
+  "description": "",
   "scripts": {
     "stats": "webpack --profile --json > stats.json",
     "start": "webpack-dev-server",

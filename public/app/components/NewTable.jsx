@@ -6,23 +6,28 @@ import Collapse from 'react-bootstrap/lib/Collapse';
 import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
 import Well from 'react-bootstrap/lib/Well';
+import Label from 'react-bootstrap/lib/Label';
 var xhr = require('xhr');
 // Table data as a list of array.
 
 class NewTable extends React.Component {
-    constructor(){
-      super();
+    constructor(props){
+      super(props);
+      this.state= {
+        data : []
+      };
     }
 
     componentDidMount() {
       xhr({
       uri: this.props.getUrl
 
-      }, function (err, resp, body) {
+    },  (err, resp, body) => {
           // check resp.statusCode
           if(resp.statusCode===200){
-            console.log(resp);
-            console.log(body);
+            this.setState({data:JSON.parse(body)});
+            // console.log(resp);
+            console.log(JSON.parse(body));
           }else{
             console.log('Error getting data');
             console.log(err);
@@ -46,16 +51,16 @@ class NewTable extends React.Component {
                 info: 'Random text or also better: I wish I had better word, I wish i found some chords thatare in order'
             }
         ];
-        let rowNodes = myData.map((person)=>{
-          return (<TableRow data={person} key={person.name} />);
+        let rowNodes = this.state.data.map((item)=>{
+          return (<TableRow data={item} key={item.uid} />);
         });
         return (
-                <Panel header={'People'} bsStyle='info'>
+                <Panel header={<Label bsStyle="default">Default</Label>} bsStyle='info'>
                   <TableHeader>
+                      <TableCell>Type</TableCell>
                       <TableCell>Name</TableCell>
-                      <TableCell>Surname</TableCell>
-                      <TableCell>Age</TableCell>
-                      <TableCell>Born</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Actions</TableCell>
                   </TableHeader>
                      {rowNodes}
                 </Panel>
@@ -85,20 +90,20 @@ class TableRow extends React.Component {
       let headerStyle={
 
       }
-      let {name, surname, age, born, info} = this.props.data;
+      let {type, name, status, uid} = this.props.data;
         return (
               <div>
                 <Row style={headerStyle}  onClick={()=> this.setState({ open: !this.state.open })}>
+                  <TableCell>{type}</TableCell>
                   <TableCell>{name}</TableCell>
-                  <TableCell>{surname}</TableCell>
-                  <TableCell>{age}</TableCell>
-                  <TableCell>{born}</TableCell>
+                  <TableCell>{status}</TableCell>
+                  <TableCell>Bei botoni</TableCell>
                 </Row>
                 <Row>
                   <Collapse in={this.state.open}>
                     <div>
                       <Well>
-                        {info}
+                        {uid}
                       </Well>
                     </div>
                   </Collapse>
