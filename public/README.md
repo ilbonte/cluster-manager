@@ -1,7 +1,3 @@
-# react-boilerplate - Boilerplate for "SurviveJS - React"
-
-See [SurviveJS - React](http://survivejs.com/react/introduction/) for the book.
-
 ## Getting Started
 
 1. `npm i` - Install dependencies. This might take a while.
@@ -19,3 +15,5 @@ Beyond development, the boilerplate supports other tasks listed below:
 * `npm run test:tdd` - Runs `tests/` in a TDD mode (watches for changes and rebuilds).
 * `npm run test:lint` - Runs code through ESLint to spot code quality issues.
 * `npm run stats` - Generates Webpack build statistics. See the [Analyzing Build Statistics](http://survivejs.com/webpack/building-with-webpack/analyzing-build-statistics/) chapter.
+
+Boilerplate source:https://github.com/survivejs/react-boilerplate
