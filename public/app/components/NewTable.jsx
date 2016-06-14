@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
@@ -33,24 +33,24 @@ class NewTable extends React.Component {
     render() {
         let myData = [
             {
-                name: "Alex",
-                surname: "Rossi",
+                name: 'Alex',
+                surname: 'Rossi',
                 age: 43,
-                born: "Trento",
-                info: " I wish I had better word, i don't care what you think...Random text or also better:  I wish i found some chords thatare in order"
+                born: 'Trento',
+                info: ' I wish I had better word, i don t care what you think...Random text or also better:  I wish i found some chords thatare in order'
             }, {
-                name: "Luca",
-                surname: "Verdi",
+                name: 'Luca',
+                surname: 'Verdi',
                 age: 20,
-                born: "cles",
-                info: "Random text or also better: I wish I had better word, I wish i found some chords thatare in order"
+                born: 'cles',
+                info: 'Random text or also better: I wish I had better word, I wish i found some chords thatare in order'
             }
         ];
         let rowNodes = myData.map((person)=>{
           return (<TableRow data={person} key={person.name} />);
         });
         return (
-                <Panel header={'People'} bsStyle="info">
+                <Panel header={'People'} bsStyle='info'>
                   <TableHeader>
                       <TableCell>Name</TableCell>
                       <TableCell>Surname</TableCell>
@@ -67,9 +67,9 @@ class TableHeader extends React.Component {
 
     render() {
       let headerStyle={
-        background:"#ea6153",
-        color: "white",
-        fontWeight:"900"
+        background:'#ea6153',
+        color: 'white',
+        fontWeight:'900'
       }
         return (
               <Row style={headerStyle}>{this.props.children}</Row>
@@ -112,7 +112,7 @@ class TableCell extends React.Component {
 
     render() {
       let cellStyle={
-        border: "1px solid black"
+        border: '1px solid black'
       }
         return (
               <Col sm={3} style={cellStyle}>{this.props.children}</Col>
