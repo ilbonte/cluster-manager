@@ -7,106 +7,185 @@ import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
 import Well from 'react-bootstrap/lib/Well';
 import Label from 'react-bootstrap/lib/Label';
-var xhr = require('xhr');
-// Table data as a list of array.
+import Modal from 'react-bootstrap/lib/Modal';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import FormControl from 'react-bootstrap/lib/FormControl';
+import ControlLabel from 'react-bootstrap/lib/ControlLabel';
+import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
+
+const xhr = require('xhr');
+const baseUrl = 'http://localhost:3000';
 
 class NewTable extends React.Component {
-    constructor(props){
-      super(props);
-      this.state= {
-        data : []
-      };
+    constructor() {
+        super();
+        this.state = {
+            data: [],
+            templates: []
+        };
     }
 
     componentDidMount() {
-      xhr({
-      uri: this.props.getUrl
+        xhr({
+            uri: baseUrl + this.props.getUrl
 
-    },  (err, resp, body) => {
-          // check resp.statusCode
-          if(resp.statusCode===200){
-            this.setState({data:JSON.parse(body)});
-            // console.log(resp);
-            console.log(JSON.parse(body));
-          }else{
-            console.log('Error getting data');
-            console.log(err);
-          }
-      });
-
-   }
-    render() {
-        let myData = [
-            {
-                name: 'Alex',
-                surname: 'Rossi',
-                age: 43,
-                born: 'Trento',
-                info: ' I wish I had better word, i don t care what you think...Random text or also better:  I wish i found some chords thatare in order'
-            }, {
-                name: 'Luca',
-                surname: 'Verdi',
-                age: 20,
-                born: 'cles',
-                info: 'Random text or also better: I wish I had better word, I wish i found some chords thatare in order'
+        }, (err, resp, body) => {
+            // check resp.statusCode
+            if (resp.statusCode === 200) {
+                this.setState({data: JSON.parse(body)});
+                // console.log(resp);
+                console.log(JSON.parse(body));
+            } else {
+                console.log('Error getting data');
+                console.log(err);
             }
-        ];
-        let rowNodes = this.state.data.map((item)=>{
-          return (<TableRow data={item} key={item.uid} />);
         });
+        if (this.props.title.toLowerCase() === 'images' && this.state.templates.length === 0) {
+            //nothing in the 'cache'
+            xhr({
+                uri: baseUrl + '/v1/templates'
+            }, (err, resp, body) => {
+                // check resp.statusCode
+                if (resp.statusCode === 200) {
+                    console.log('templates....');
+                    this.setState({templates: JSON.parse(body)});
+                } else {
+                    console.log('Error getting templates');
+                    console.log(err);
+                }
+            });
+
+        }
+
+    }
+    render() {
+        const {title} = this.props;
+        let rowNodes = this.state.data.map((item) => {
+            return (<TableRow data={item} key={item.uid} />);
+        });
+
+        let headerContent = null;
+        if (title.toLowerCase() === 'images') {
+            headerContent = <Row>
+                <Col xs={6}>
+                    <h3>{title}</h3>
+                </Col>
+                <Col xs={6} style={{
+                    textAlign: 'right'
+                }}>
+                    <Button onClick={this.open}>Add Image</Button>
+                    <Modal show={this.state.showModal} onHide={this.close} bsSize='large'>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Modal heading</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {this.createModalBody()}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button onClick={this.close}>Close</Button>
+                        </Modal.Footer>
+                    </Modal>
+                </Col>
+            </Row>
+        } else {
+            headerContent = <Row>
+                <Col xs={6}>
+                    <h3>{title}</h3>
+                </Col>
+            </Row>
+
+        }
         return (
-                <Panel header={<Label bsStyle="default">Default</Label>} bsStyle='info'>
-                  <TableHeader>
-                      <TableCell>Type</TableCell>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell>Actions</TableCell>
-                  </TableHeader>
-                     {rowNodes}
+            <div>
+                <Panel header={headerContent} bsStyle='info'>
+                    <TableHeader>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Actions</TableCell>
+                    </TableHeader>
+                    {rowNodes}
                 </Panel>
+
+            </div>
         );
+    }
+
+    close = () => {
+        this.setState({showModal: false});
+    }
+
+    open = () => {
+        this.setState({showModal: true});
+    }
+
+    asd = (f) => {
+      console.log(f);
+      this.setState({sType:f})
+    }
+
+    altro(){
+      console.log(this.state.sType);
+      if(this.state.sType==='docker'){
+        return (<h1>Yooo docker</h1>);
+      }else{
+        return (<h1>naaaahah</h1>);
+      }
+    }
+
+    createModalBody = () => {
+      let options = this.state.templates.map((item) => {
+          return (<Button bsStyle="success" key={item.type} onClick={this.asd.bind(this,item.type)}>{item.type}</Button>);
+      });
+        return (<div>
+            <ButtonToolbar>
+                    {options}
+             </ButtonToolbar>
+             {this.altro()}
+           </div>
+        )
     }
 }
 
 class TableHeader extends React.Component {
 
     render() {
-      let headerStyle={
-        background:'#ea6153',
-        color: 'white',
-        fontWeight:'900'
-      }
+        let headerStyle = {
+            background: '#ea6153',
+            color: 'white',
+            fontWeight: '900'
+        }
         return (
-              <Row style={headerStyle}>{this.props.children}</Row>
+            <Row style={headerStyle}>{this.props.children}</Row>
         );
     }
 }
 class TableRow extends React.Component {
-    constructor(){
-      super();
-      this.state = {};
+    constructor() {
+        super();
+        this.state = {};
     }
     render() {
-      let headerStyle={
-
-      }
-      let {type, name, status, uid} = this.props.data;
+        let headerStyle = {}
+        let {type, name, status, uid} = this.props.data;
         return (
-              <div>
-                <Row style={headerStyle}  onClick={()=> this.setState({ open: !this.state.open })}>
-                  <TableCell>{type}</TableCell>
-                  <TableCell>{name}</TableCell>
-                  <TableCell>{status}</TableCell>
-                  <TableCell>Bei botoni</TableCell>
+            <div>
+                <Row style={headerStyle} onClick={() => this.setState({
+                    open: !this.state.open
+                })}>
+                    <TableCell>{type}</TableCell>
+                    <TableCell>{name}</TableCell>
+                    <TableCell>{status}</TableCell>
+                    <TableCell>Bei botoni</TableCell>
                 </Row>
                 <Row>
-                  <Collapse in={this.state.open}>
-                    <div>
-                      <Well>
-                        {uid}
-                      </Well>
-                    </div>
-                  </Collapse>
+                    <Collapse in={this.state.open}>
+                        <div>
+                            <Well>
+                                {uid}
+                            </Well>
+                        </div>
+                    </Collapse>
                 </Row>
             </div>
         );
@@ -116,18 +195,13 @@ class TableRow extends React.Component {
 class TableCell extends React.Component {
 
     render() {
-      let cellStyle={
-        border: '1px solid black'
-      }
+        let cellStyle = {
+            border: '1px solid black'
+        }
         return (
-              <Col sm={3} style={cellStyle}>{this.props.children}</Col>
+            <Col xs={3} style={cellStyle}>{this.props.children}</Col>
         );
     }
 }
-
-
-
-
-
 
 export default NewTable;
