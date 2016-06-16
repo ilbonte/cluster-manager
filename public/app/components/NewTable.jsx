@@ -119,29 +119,31 @@ class NewTable extends React.Component {
         this.setState({showModal: true});
     }
 
-    asd = (f) => {
-      console.log(f);
-      this.setState({sType:f})
+    setSelectedType = (template) => {
+      this.setState({selectedType:template})
     }
 
-    altro(){
-      console.log(this.state.sType);
-      if(this.state.sType==='docker'){
-        return (<h1>Yooo docker</h1>);
-      }else{
-        return (<h1>naaaahah</h1>);
+    createForm(){
+      console.log('eccolo');
+      console.log(this.state.selectedType);
+      if(this.state.selectedType){
+        if(this.state.selectedType.type==='docker'){
+          return (<h1>Yooo {this.state.selectedType.type}</h1>);
+        }else{
+          return (<h1>naaaahah</h1>);
+        }
       }
     }
 
     createModalBody = () => {
       let options = this.state.templates.map((item) => {
-          return (<Button bsStyle="success" key={item.type} onClick={this.asd.bind(this,item.type)}>{item.type}</Button>);
+          return (<Button bsStyle="success" key={item.type} onClick={this.setSelectedType.bind(this,item)}>{item.type}</Button>);
       });
         return (<div>
             <ButtonToolbar>
                     {options}
              </ButtonToolbar>
-             {this.altro()}
+             {this.createForm()}
            </div>
         )
     }
