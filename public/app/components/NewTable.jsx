@@ -12,9 +12,63 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
+import Autocomplete from 'react-autocomplete';
 
 const xhr = require('xhr');
 const baseUrl = 'http://localhost:3000';
+
+const dockerfile=[{
+    name: 'FROM'
+}, {
+    name: 'MANTAINER'
+}, {
+    name: 'RUN'
+}, {
+    name: 'CMD'
+}, {
+    name: 'LABEL'
+}, {
+    name: 'EXPOSE'
+}, {
+    name: 'ENV'
+}, {
+    name: 'ADD'
+}, {
+    name: 'COPY'
+}, {
+    name: 'ENTRYPOINT'
+}, {
+    name: 'VOLUME'
+}, {
+    name: 'USER'
+}, {
+    name: 'WORKDIR'
+}, {
+    name: 'ARG'
+}, {
+    name: 'ONBUILD'
+}, {
+    name: 'STOPSIGNAL'
+}];
+
+const dockerTemplate = {
+    type: 'docker',
+    fields: {
+        name: {
+            type: 'string',
+            required: 'true'
+        }
+    }
+};
+const vagrantTemplate = {
+    type: 'vagrant',
+    fields: {
+        name: {
+            type: 'string',
+            required: 'true'
+        }
+    }
+};
 
 class NewTable extends React.Component {
     constructor() {
@@ -61,7 +115,7 @@ class NewTable extends React.Component {
     render() {
         const {title} = this.props;
         let rowNodes = this.state.data.map((item) => {
-            return (<TableRow data={item} key={item.uid} />);
+            return (<TableRow data={item} key={item.uid}/>);
         });
 
         let headerContent = null;
@@ -119,32 +173,73 @@ class NewTable extends React.Component {
         this.setState({showModal: true});
     }
 
-    setSelectedType = (template) => {
-      this.setState({selectedType:template})
+    setSelectedType = (type) => {
+        this.setState({selectedType: type})
     }
+    createDockerForm() {
+        let styles = {
+            item: {
+                padding: '2px 6px',
+                cursor: 'default'
+            },
 
-    createForm(){
-      console.log('eccolo');
-      console.log(this.state.selectedType);
-      if(this.state.selectedType){
-        if(this.state.selectedType.type==='docker'){
-          return (<h1>Yooo {this.state.selectedType.type}</h1>);
-        }else{
-          return (<h1>naaaahah</h1>);
+            highlightedItem: {
+                color: 'white',
+                background: 'hsl(200, 50%, 50%)',
+                padding: '2px 6px',
+                cursor: 'default'
+            },
+
+            menu: {
+                border: 'solid 1px #ccc'
+            }
         }
-      }
+        function matchStateToTerm(state, value) {
+            return (state.name.toLowerCase().indexOf(value.toLowerCase()) !== -1 )
+        }
+        function sortStates(a, b, value) {
+            return (a.name.toLowerCase().indexOf(value.toLowerCase()) > b.name.toLowerCase().indexOf(value.toLowerCase())
+                ? 1
+                : -1)
+        }
+        return (<Autocomplete items={dockerfile} getItemValue={(item) => item.name}
+         shouldItemRender={matchStateToTerm}
+         sortItems={sortStates}
+         onChange={(event, value) => this.setState({value})}
+         onSelect={value => this.setState({value})}
+         renderItem={(item, isHighlighted) => (
+            <div style={isHighlighted
+                ? styles.highlightedItem
+                : styles.item} key={item.name}>{item.name}
+            </div>
+        )}/>);
+    }
+    createForm() {
+        console.log('eccolo');
+        console.log(this.state.selectedType);
+        if (this.state.selectedType) {
+            if (this.state.selectedType.type === 'docker') {
+                return this.createDockerForm();
+            } else {
+                return (
+                    <h1>naaaahah</h1>
+                );
+            }
+        }
     }
 
     createModalBody = () => {
-      let options = this.state.templates.map((item) => {
-          return (<Button bsStyle="success" key={item.type} onClick={this.setSelectedType.bind(this,item)}>{item.type}</Button>);
-      });
-        return (<div>
-            <ButtonToolbar>
-                    {options}
-             </ButtonToolbar>
-             {this.createForm()}
-           </div>
+        // let options = this.state.templates.map((item) => {
+        //     return (<Button bsStyle="success" key={item.type} onClick={this.setSelectedType.bind(this,item)}>{item.type}</Button>);
+        // });
+        return (
+            <div>
+                <ButtonToolbar>
+                    <Button bsStyle="success" onClick={this.setSelectedType.bind(this, dockerTemplate)}>Docker</Button>
+                    <Button bsStyle="success" onClick={this.setSelectedType.bind(this, vagrantTemplate)}>Vagrant</Button>
+                </ButtonToolbar>
+                {this.createForm()}
+            </div>
         )
     }
 }
