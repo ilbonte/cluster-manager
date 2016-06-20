@@ -15,6 +15,8 @@ import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Table from 'react-bootstrap/lib/Table';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
+import Popover from 'react-bootstrap/lib/Popover';
 import Autocomplete from 'react-autocomplete';
 const xhr = require('xhr');
 const baseUrl = 'http://localhost:3000';
@@ -126,13 +128,14 @@ class NewTable extends React.Component {
                     <Button onClick={this.open}>Add Image</Button>
                     <Modal show={this.state.showModal} onHide={this.close} bsSize='large'>
                         <Modal.Header closeButton>
-                            <Modal.Title>Modal heading</Modal.Title>
+                            <Modal.Title>Configure your image</Modal.Title>
                         </Modal.Header>
-                        <Modal.Body>
+                        <Modal.Body >
                             {this.createModalBody()}
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button onClick={this.close}>Close</Button>
+                          <Button onClick={this.save} bsStyle='success'>Save</Button>
+                            <Button onClick={this.close}  bsStyle='danger'>Close</Button>
                         </Modal.Footer>
                     </Modal>
                 </Col>
@@ -161,6 +164,10 @@ class NewTable extends React.Component {
     close = () => {
         this.setState({showModal: false});
     }
+    save = () => {
+        console.log('save');
+        console.log(this.refs.dockerfile.state);
+    }
     open = () => {
         this.setState({showModal: true});
     }
@@ -181,11 +188,11 @@ class NewTable extends React.Component {
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <DockerfileBody/>
+                        <DockerfileBody ref='dockerfile'/>
                     </Table>
                 </Col>
                 <Col xs={6}>
-                    <h1>Working example with validation</h1>
+                  <FormControl style={{padding:'1px'}} componentClass="textarea" value={JSON.stringify(this.refs)}/>
                 </Col>
             </Row>
         );
@@ -236,19 +243,12 @@ class DockerfileBody extends React.Component {
     addNewRow = (index) => {
         console.log('state:');
         console.log(this.state);
-         var rows = this.state.rows.slice();
-         rows.push({instruction: '', arguments: ''});
-         this.setState({rows});
-
-        // this.state.rows.push({instruction: this.state.tmpInstruction, arguments: this.state.tmpArgs});
-        // this.setState({tmpInstruction: ''});
-
-
-        // this.state.tmpInstruction='';
-        // this.state.tmpArgs='';
+        var rows = this.state.rows.slice();
+        rows.push({instruction: '', arguments: ''});
+        this.setState({rows});
     }
 
-    updateRows = (value,index,field) => {
+    updateRows = (value, index, field) => {
         var rows = this.state.rows.slice();
         rows[index][field] = value;
         this.setState({rows})
@@ -260,8 +260,8 @@ class DockerfileBody extends React.Component {
                 cursor: 'default'
             },
             highlightedItem: {
-                color: 'white',
-                background: 'hsl(200, 50%, 50%)',
+                color: '#98978b',
+                background: '#f8f5f0',
                 padding: '2px 6px',
                 cursor: 'default'
             },
@@ -272,11 +272,6 @@ class DockerfileBody extends React.Component {
         function matchStateToTerm(state, value) {
             return (state.name.toLowerCase().indexOf(value.toLowerCase()) !== -1);
         }
-        function sortStates(a, b, value) {
-            return (a.name.toLowerCase().indexOf(value.toLowerCase()) > b.name.toLowerCase().indexOf(value.toLowerCase())
-                ? 1
-                : -1);
-        }
 
         var rowNodes = this.state.rows.map((item, index) => {
             console.log(item);
@@ -285,24 +280,24 @@ class DockerfileBody extends React.Component {
                     <td>{index}</td>
                     <td><Autocomplete inputProps={{
                     size: '10'
-                }} value={this.state.rows[index].instruction} items={dockerfile} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} sortItems={sortStates} onChange={(event) => {
-                    this.updateRows(event.target.value,index, 'instruction');
+                }} value={this.state.rows[index].instruction} items={dockerfile} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm}  onChange={(event) => {
+                    this.updateRows(event.target.value, index, 'instruction');
                 }} onSelect={(value) => {
-                
-                    this.updateRows(value,index, 'instruction');
+                    this.updateRows(value, index, 'instruction');
                 }} renderItem={(item, isHighlighted) => (
                     <div style={isHighlighted
                         ? styles.highlightedItem
                         : styles.item} key={item.name}>{item.name}
+                        <a href={'https://docs.docker.com/engine/reference/builder/#' + item.name.toLowerCase()} target='_blank'>{'  '} #</a>
                     </div>
                 )}/></td>
                     <td>
-                        <FormControl componentClass="textarea" onChange={(event) => {
-                            this.updateRows(event.target.value,index,'arguments');
+                        <FormControl style={{padding:'1px'}} componentClass="textarea" onChange={(event) => {
+                            this.updateRows(event.target.value, index, 'arguments'); //TODO: forse non serve farlo sull'onchange
                         }}/></td>
                     <td>
-                        <ButtonGroup vertical>
-                            <Button bsStyle="success" bsSize="small" onClick={this.addNewRow.bind(null,index)}><Glyphicon glyph="plus"/></Button>
+                        <ButtonGroup>
+                            <Button bsStyle="success" bsSize="small" onClick={this.addNewRow.bind(null, index)}><Glyphicon glyph="plus"/></Button>
                             <Button bsStyle="danger" bsSize="small"><Glyphicon glyph="trash"/>
                             </Button>
                         </ButtonGroup>
@@ -315,46 +310,6 @@ class DockerfileBody extends React.Component {
                 {rowNodes}
             </tbody>
         );
-    }
-}
-
-class InstructionField extends React.Component {
-    constructor() {
-        super();
-        this.state = {};
-    }
-    render() {
-        let styles = {
-            item: {
-                padding: '2px 6px',
-                cursor: 'default'
-            },
-            highlightedItem: {
-                color: 'white',
-                background: 'hsl(200, 50%, 50%)',
-                padding: '2px 6px',
-                cursor: 'default'
-            },
-            menu: {
-                border: 'solid 1px #ccc'
-            }
-        }
-        function matchStateToTerm(state, value) {
-            return (state.name.toLowerCase().indexOf(value.toLowerCase()) !== -1);
-        }
-        function sortStates(a, b, value) {
-            return (a.name.toLowerCase().indexOf(value.toLowerCase()) > b.name.toLowerCase().indexOf(value.toLowerCase())
-                ? 1
-                : -1);
-        }
-        return (<Autocomplete inputProps={{
-            size: '10'
-        }} value={this.state.tmpInstruction} items={dockerfile} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} sortItems={sortStates} onChange={(event, tmpInstruction) => this.setState({tmpInstruction})} onSelect={tmpInstruction => this.setState({tmpInstruction})} renderItem={(item, isHighlighted) => (
-            <div style={isHighlighted
-                ? styles.highlightedItem
-                : styles.item} key={item.name}>{item.name}
-            </div>
-        )}/>);
     }
 }
 
