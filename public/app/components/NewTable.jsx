@@ -26,7 +26,7 @@ const dockerfile = [
     {
         name: 'FROM'
     }, {
-        name: 'MANTAINER'
+        name: 'MAINTAINER'
     }, {
         name: 'RUN'
     }, {
@@ -90,7 +90,7 @@ class NewTable extends React.Component {
         };
     }
     componentDidMount() {
-      this.updateRows('FROM',0,'instruction');
+        this.updateRows('FROM', 0, 'instruction');
         xhr({
             uri: baseUrl + this.props.getUrl
         }, (err, resp, body) => {
@@ -143,8 +143,8 @@ class NewTable extends React.Component {
                             {this.createModalBody()}
                         </Modal.Body>
                         <Modal.Footer>
-                          <Button onClick={this.save} bsStyle='success'>Save</Button>
-                            <Button onClick={this.close}  bsStyle='danger'>Close</Button>
+                            <Button onClick={this.save} bsStyle='success'>Save</Button>
+                            <Button onClick={this.close} bsStyle='danger'>Close</Button>
                         </Modal.Footer>
                     </Modal>
                 </Col>
@@ -183,11 +183,26 @@ class NewTable extends React.Component {
     setSelectedType = (type) => {
         this.setState({selectedType: type})
     }
-    addNewRow = (index) => {
-        console.log('state:');
+
+    removeRow = (index) => {
+        console.log(index);
         console.log(this.state);
         var rows = this.state.rows.slice();
-        rows.push({instruction: '', arguments: ''});
+
+        if (rows.length>1) {
+            rows.splice(index, 1);
+        }
+        this.setState({rows});
+
+    }
+
+    addNewRow = (index) => {
+
+        var rows = this.state.rows.slice();
+        rows.splice(index + 1, 0, {
+            instruction: '',
+            arguments: ''
+        });
         this.setState({rows});
     }
 
@@ -196,67 +211,70 @@ class NewTable extends React.Component {
         rows[index][field] = value;
         this.setState({rows})
     }
-    printDockerfile = () =>{
-      let dockerString='';
-      this.state.rows.forEach((item)=>{
-        dockerString+=item.instruction+ ' '+ item.arguments+' \n';
-      });
-      return dockerString;
+    printDockerfile = () => {
+        let dockerString = '';
+        this.state.rows.forEach((item) => {
+            dockerString += item.instruction + ' ' + item.arguments + ' \n';
+        });
+        return dockerString;
     }
 
     createDockerForm() {
-      let styles = {
-          item: {
-              padding: '2px 6px',
-              cursor: 'default'
-          },
-          highlightedItem: {
-              color: '#98978b',
-              background: '#f8f5f0',
-              padding: '2px 6px',
-              cursor: 'default'
-          },
-          menu: {
-              border: 'solid 1px #ccc'
-          }
-      }
+        let styles = {
+            item: {
+                padding: '2px 6px',
+                cursor: 'default'
+            },
+            highlightedItem: {
+                color: '#98978b',
+                background: '#f8f5f0',
+                padding: '2px 6px',
+                cursor: 'default'
+            },
+            menu: {
+                border: 'solid 1px #ccc'
+            }
+        }
 
-      function matchStateToTerm(state, value) {
-          return (state.name.toLowerCase().indexOf(value.toLowerCase()) !== -1);
-      }
+        function matchStateToTerm(state, value) {
+            return (state.name.toLowerCase().indexOf(value.toLowerCase()) !== -1);
+        }
 
-      var rowNodes = this.state.rows.map((item, index) => {
-          console.log(item);
-          return (
-              <tr key={index}>
-                  <td>{index}</td>
-                  <td><Autocomplete inputProps={{
-                  size: '10'
-              }} value={this.state.rows[index].instruction} items={dockerfile} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm}  onChange={(event) => {
-                  this.updateRows(event.target.value, index, 'instruction');
-              }} onSelect={(value) => {
-                  this.updateRows(value, index, 'instruction');
-              }} renderItem={(item, isHighlighted) => (
-                  <div style={isHighlighted
-                      ? styles.highlightedItem
-                      : styles.item} key={item.name}>{item.name}
-                      <a href={'https://docs.docker.com/engine/reference/builder/#' + item.name.toLowerCase()} target='_blank'>{'  '} #</a>
-                  </div>
-              )}/></td>
-                  <td>
-                      <FormControl style={{padding:'1px'}} componentClass="textarea" onChange={(event) => {
-                          this.updateRows(event.target.value, index, 'arguments'); //TODO: forse non serve farlo sull'onchange
-                      }}/></td>
-                  <td>
-                      <ButtonGroup>
-                          <Button bsStyle="success" bsSize="small" onClick={this.addNewRow.bind(null, index)}><Glyphicon glyph="plus"/></Button>
-                          <Button bsStyle="danger" bsSize="small"><Glyphicon glyph="trash"/>
-                          </Button>
-                      </ButtonGroup>
-                  </td>
-              </tr>
-          );
-      });
+        var rowNodes = this.state.rows.map((item, index) => {
+
+            return (
+                <tr key={index}>
+                    <td>{index}</td>
+                    <td><Autocomplete inputProps={{
+                    size: '10'
+                }} value={this.state.rows[index].instruction} items={dockerfile} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} onChange={(event) => {
+                    this.updateRows(event.target.value, index, 'instruction');
+                }} onSelect={(value) => {
+                    this.updateRows(value, index, 'instruction');
+                }} renderItem={(item, isHighlighted) => (
+                    <div style={isHighlighted
+                        ? styles.highlightedItem
+                        : styles.item} key={item.name}>{item.name}
+                        <a href={'https://docs.docker.com/engine/reference/builder/#' + item.name.toLowerCase()} target='_blank'>{' '}
+                            #</a>
+                    </div>
+                )}/></td>
+                    <td>
+                        <FormControl value={this.state.rows[index].arguments} style={{
+                            padding: '1px'
+                        }} componentClass="textarea" onChange={(event) => {
+                            this.updateRows(event.target.value, index, 'arguments');
+                        }}/></td>
+                    <td>
+                        <ButtonGroup>
+                            <Button bsStyle="success" bsSize="small" onClick={this.addNewRow.bind(null, index)}><Glyphicon glyph="plus"/></Button>
+                            <Button bsStyle="danger" bsSize="small" onClick={this.removeRow.bind(null, index)}><Glyphicon glyph="trash"/>
+                            </Button>
+                        </ButtonGroup>
+                    </td>
+                </tr>
+            );
+        });
 
         let content = (
             <Row>
@@ -276,16 +294,17 @@ class NewTable extends React.Component {
                     </Table>
                 </Col>
                 <Col xs={6}>
-                  <FormControl rows={this.state.rows.length*2} style={{padding:'1px'}} componentClass="textarea" value={this.printDockerfile()}/>
-                  <ErrorsBox dockerfile={this.printDockerfile()}/>
+                    <FormControl disabled="disabled" rows={this.state.rows.length * 2} style={{
+                        padding: '1px'
+                    }} componentClass="textarea" value={this.printDockerfile()}/>
+                    <ErrorsBox dockerfile={this.printDockerfile()}/>
                 </Col>
             </Row>
         );
         return (content);
     }
     createForm() {
-        console.log('eccolo');
-        console.log(this.state.selectedType);
+
         if (this.state.selectedType) {
             if (this.state.selectedType.type === 'docker') {
                 return this.createDockerForm();
@@ -320,9 +339,11 @@ class ErrorsBox extends React.Component {
         const dockerfile = this.props.dockerfile;
         let isValid = validateDockerfile(dockerfile, {quiet: false});
         let componet = '';
-        console.log(isValid);
-        console.log(dockerfile);
-        const style = {padding:'1px', marginBottom:'1px'}
+
+        const style = {
+            padding: '1px',
+            marginBottom: '1px'
+        }
         if (isValid.valid) {
             return null;
         } else {
@@ -330,14 +351,16 @@ class ErrorsBox extends React.Component {
                 if (error.priority === 0) {
                     return (
                         <Alert bsStyle="danger" key={index} style={style}>
-                            <strong>Line {error.line}: </strong>
+                            <strong>Line {error.line}:
+                            </strong>
                             {error.message}
                         </Alert>
                     );
-                } else if(error.message!=='Missing CMD'){
+                } else if (error.message !== 'Missing CMD') {
                     return (
-                        <Alert bsStyle="warning" key= {index} style={style}>
-                            <strong>Line {error.line}: </strong>
+                        <Alert bsStyle="warning" key={index} style={style}>
+                            <strong>Line {error.line}:
+                            </strong>
                             {error.message}
                         </Alert>
                     );
@@ -349,8 +372,6 @@ class ErrorsBox extends React.Component {
         }
     }
 }
-
-
 
 class TableHeader extends React.Component {
     render() {
