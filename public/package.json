@@ -60,6 +60,7 @@
     "react-autocomplete": "^1.0.0-rc6",
     "react-bootstrap": "^0.29.4",
     "react-dom": "^15.1.0",
+    "validate-dockerfile": "^1.8.1",
     "xhr": "^2.2.0"
   }
 }
