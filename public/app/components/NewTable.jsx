@@ -183,13 +183,12 @@ class NewTable extends React.Component {
         console.log(this.state);
     }
     saveAndBuild = () => {
-        console.log('save');
-        console.log(this.state);
-        const  {repository,tag,hostIP,hostPort,containerPort}=this.state
+
+        const  {name,tag,hostIP,hostPort,containerPort}=this.state
         let body={
           status:'building',
           type:this.state.selectedType,
-          repository,
+          name,
           tag,
           config:{
             build:this.state.rows,
@@ -200,17 +199,19 @@ class NewTable extends React.Component {
             }
           }
         }
+        console.log(body);
         xhr({
-            body,
+            json:body,
             method:'POST',
-            uri: baseUrl+'/v1/',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            uri: baseUrl+'/v1/images/new'
+
         }, function(err, resp, body) {
+          console.log('responese');
+
           if (resp.statusCode === 200) {
               // this.setState({data: JSON.parse(body)});
-              console.log(JSON.parse(body));
+
+              console.log((body));
           } else {
               console.log('Error posting new image');
               console.log(err);
@@ -317,11 +318,14 @@ class NewTable extends React.Component {
                     </div>
                 )}/></td>
                     <td>
-                        <FormControl value={this.state.rows[index].arguments} style={{
-                            padding: '1px'
-                        }} componentClass="textarea" onChange={(event) => {
-                            this.updateRows(event.target.value, index, 'arguments');
-                        }}/></td>
+                      <FormControl value={this.state.rows[index].arguments} style={{
+                          padding: '1px'
+                      }} componentClass="textarea" onChange={(event) => {
+                          this.updateRows(event.target.value, index, 'arguments');
+                      }}/>
+
+
+                        </td>
                     <td>
                         <ButtonGroup>
                             <Button bsStyle="success" bsSize="small" onClick={this.addNewRow.bind(null, index)}><Glyphicon glyph="plus"/></Button>
@@ -364,7 +368,7 @@ class NewTable extends React.Component {
                                     <Form inline>
                                         <ControlLabel>Tag Image:</ControlLabel>
                                         {' '}
-                                        <FormControl type="text" placeholder="repository" size="8" onChange={this.handleFieldChange.bind(this, 'repository')}/><FormControl type="text" placeholder="tag" size="8" onChange={this.handleFieldChange.bind(this, 'tag')}/></Form>
+                                        <FormControl type="text" placeholder="name" size="8" onChange={this.handleFieldChange.bind(this, 'name')}/><FormControl type="text" placeholder="tag" size="8" onChange={this.handleFieldChange.bind(this, 'tag')}/></Form>
                                 </Col>
                                 <Col xs={12}>
                                     <Form inline>
