@@ -1,24 +1,26 @@
 import React from 'react';
-import Grid from 'react-bootstrap/lib/Grid';
-import Row from 'react-bootstrap/lib/Row';
+import Alert from 'react-bootstrap/lib/Alert';
+import Accordion from 'react-bootstrap/lib/Accordion';
+import Autocomplete from 'react-autocomplete';
+import Button from 'react-bootstrap/lib/Button';
+import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
+import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Col from 'react-bootstrap/lib/Col';
 import Collapse from 'react-bootstrap/lib/Collapse';
-import Panel from 'react-bootstrap/lib/Panel';
-import Button from 'react-bootstrap/lib/Button';
-import Well from 'react-bootstrap/lib/Well';
+import ControlLabel from 'react-bootstrap/lib/ControlLabel';
+import Form from 'react-bootstrap/lib/Form';
+import FormControl from 'react-bootstrap/lib/FormControl';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import Grid from 'react-bootstrap/lib/Grid';
 import Label from 'react-bootstrap/lib/Label';
 import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Table from 'react-bootstrap/lib/Table';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
+import Panel from 'react-bootstrap/lib/Panel';
 import Popover from 'react-bootstrap/lib/Popover';
-import Alert from 'react-bootstrap/lib/Alert';
-import Autocomplete from 'react-autocomplete';
+import Row from 'react-bootstrap/lib/Row';
+import Table from 'react-bootstrap/lib/Table';
+import Well from 'react-bootstrap/lib/Well';
 const xhr = require('xhr');
 var validateDockerfile = require('validate-dockerfile');
 const baseUrl = 'http://localhost:3000';
@@ -131,10 +133,15 @@ class NewTable extends React.Component {
                 <Col xs={6}>
                     <h3>{title}</h3>
                 </Col>
-                <Col xs={6} style={{
-                    textAlign: 'right'
-                }}>
-                    <Button onClick={this.open}>Add Image</Button>
+                <Col xs={6}>
+                    <ButtonToolbar style={{
+                        float: 'right'
+                    }}>
+                        <Button bsStyle="success" onClick={this.setSelectedType.bind(this, dockerTemplate)}><Glyphicon glyph="plus"/>
+                            Docker</Button>
+                        <Button bsStyle="success" onClick={this.setSelectedType.bind(this, vagrantTemplate)}><Glyphicon glyph="plus"/>
+                            Vagrant</Button>
+                    </ButtonToolbar>
                     <Modal show={this.state.showModal} onHide={this.close} bsSize='large'>
                         <Modal.Header closeButton>
                             <Modal.Title>Configure your image</Modal.Title>
@@ -143,8 +150,20 @@ class NewTable extends React.Component {
                             {this.createModalBody()}
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button onClick={this.save} bsStyle='success'>Save</Button>
-                            <Button onClick={this.close} bsStyle='danger'>Close</Button>
+                            <Row>
+                                <Col xs={3}>
+                                    <ControlLabel>Name this template</ControlLabel>
+                                </Col>
+
+                                <Col xs={5}>
+                                    <FormControl type="text"/>
+                                </Col>
+                                <Col xs={4}>
+                                    <Button onClick={this.save} bsStyle='success'>Save</Button>
+                                    <Button onClick={this.saveAndBuild} bsStyle='success'>Save and Build</Button>
+                                    <Button onClick={this.close} bsStyle='danger'>Close</Button>
+                                </Col>
+                            </Row>
                         </Modal.Footer>
                     </Modal>
                 </Col>
@@ -177,11 +196,13 @@ class NewTable extends React.Component {
         console.log('save');
         console.log(this.state);
     }
+
     open = () => {
         this.setState({showModal: true});
     }
     setSelectedType = (type) => {
-        this.setState({selectedType: type})
+        this.setState({selectedType: type});
+        this.open();
     }
 
     removeRow = (index) => {
@@ -189,7 +210,7 @@ class NewTable extends React.Component {
         console.log(this.state);
         var rows = this.state.rows.slice();
 
-        if (rows.length>1) {
+        if (rows.length > 1) {
             rows.splice(index, 1);
         }
         this.setState({rows});
@@ -299,7 +320,32 @@ class NewTable extends React.Component {
                     }} componentClass="textarea" value={this.printDockerfile()}/>
                     <ErrorsBox dockerfile={this.printDockerfile()}/>
                 </Col>
+                <Col xs={12}>
+                    <Accordion>
+                        <Panel header="Build options">
+                            <Row>
+                                <Col xs={12}>
+                                    <Form inline>
+                                        <ControlLabel>Tag Image:</ControlLabel>
+                                        {' '}
+                                        <FormControl type="text" placeholder="repository" size="8"/><FormControl type="text" placeholder="tag" size="8"/></Form>
+                                </Col>
+                                <Col xs={12}>
+                                  <Form inline>
+                                    <ControlLabel>PortBindings:</ControlLabel>
+                                    {' '}<FormControl type="text" placeholder="Host IP Address" size="8"/><FormControl type="text" placeholder="Host Port" size="8"/><FormControl type="text" placeholder="Container Port" size="8"/>
+                                    <FormControl componentClass="select" placeholder="protocol">
+                                        <option value="tcp">tcp</option>
+                                        <option value="udp">udp</option>
+                                    </FormControl>
+                                  </Form>
+                                </Col>
+                            </Row>
+                        </Panel>
+                    </Accordion>
+                </Col>
             </Row>
+
         );
         return (content);
     }
@@ -310,7 +356,7 @@ class NewTable extends React.Component {
                 return this.createDockerForm();
             } else {
                 return (
-                    <h1>naaaahah</h1>
+                    <h1>naaaahah</h1 >
                 );
             }
         }
@@ -321,10 +367,6 @@ class NewTable extends React.Component {
         // });
         return (
             <div>
-                <ButtonToolbar>
-                    <Button bsStyle="success" onClick={this.setSelectedType.bind(this, dockerTemplate)}>Docker</Button>
-                    <Button bsStyle="success" onClick={this.setSelectedType.bind(this, vagrantTemplate)}>Vagrant</Button>
-                </ButtonToolbar>
                 {this.createForm()}
             </div>
         )
