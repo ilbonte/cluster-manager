@@ -106,21 +106,7 @@ class NewTable extends React.Component {
                 console.log(err);
             }
         });
-        if (this.props.title.toLowerCase() === 'images' && this.state.templates.length === 0) {
-            //nothing in the 'cache'
-            xhr({
-                uri: baseUrl + '/v1/templates'
-            }, (err, resp, body) => {
-                // check resp.statusCode
-                if (resp.statusCode === 200) {
-                    console.log('templates....');
-                    this.setState({templates: JSON.parse(body)});
-                } else {
-                    console.log('Error getting templates');
-                    console.log(err);
-                }
-            });
-        }
+
     }
     render() {
         const {title} = this.props;
@@ -137,9 +123,9 @@ class NewTable extends React.Component {
                     <ButtonToolbar style={{
                         float: 'right'
                     }}>
-                        <Button bsStyle="success" onClick={this.setSelectedType.bind(this, dockerTemplate)}><Glyphicon glyph="plus"/>
+                        <Button bsStyle="success" onClick={this.setSelectedType.bind(this, 'docker')}><Glyphicon glyph="plus"/>
                             Docker</Button>
-                        <Button bsStyle="success" onClick={this.setSelectedType.bind(this, vagrantTemplate)}><Glyphicon glyph="plus"/>
+                          <Button bsStyle="success" onClick={this.setSelectedType.bind(this, 'vagrant')}><Glyphicon glyph="plus"/>
                             Vagrant</Button>
                     </ButtonToolbar>
                     <Modal show={this.state.showModal} onHide={this.close} bsSize='large'>
@@ -196,6 +182,41 @@ class NewTable extends React.Component {
         console.log('save');
         console.log(this.state);
     }
+    saveAndBuild = () => {
+        console.log('save');
+        console.log(this.state);
+        const  {repository,tag,hostIP,hostPort,containerPort}=this.state
+        let body={
+          status:'building',
+          type:this.state.selectedType,
+          repository,
+          tag,
+          config:{
+            build:this.state.rows,
+            run:{
+              hostIP,
+              hostPort,
+              containerPort
+            }
+          }
+        }
+        xhr({
+            body,
+            method:'POST',
+            uri: baseUrl+'/v1/',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }, function(err, resp, body) {
+          if (resp.statusCode === 200) {
+              // this.setState({data: JSON.parse(body)});
+              console.log(JSON.parse(body));
+          } else {
+              console.log('Error posting new image');
+              console.log(err);
+          }
+        })
+    }
 
     open = () => {
         this.setState({showModal: true});
@@ -232,6 +253,13 @@ class NewTable extends React.Component {
         rows[index][field] = value;
         this.setState({rows})
     }
+
+    handleFieldChange = (field, event) => {
+        console.log(field);
+        console.log(event.target.value)
+        this.setState({[field]: event.target.value});
+
+    }
     printDockerfile = () => {
         let dockerString = '';
         this.state.rows.forEach((item) => {
@@ -253,7 +281,15 @@ class NewTable extends React.Component {
                 cursor: 'default'
             },
             menu: {
-                border: 'solid 1px #ccc'
+                borderRadius: '3px',
+                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+                background: 'rgba(255, 255, 255, 0.9)',
+                padding: '2px 0',
+                fontSize: '90%',
+                position: 'fixed',
+                overflow: 'auto',
+                maxHeight: '50%',
+                zIndex: '1'
             }
         }
 
@@ -268,7 +304,7 @@ class NewTable extends React.Component {
                     <td>{index}</td>
                     <td><Autocomplete inputProps={{
                     size: '10'
-                }} value={this.state.rows[index].instruction} items={dockerfile} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} onChange={(event) => {
+                }} menuStyle={styles.menu} value={this.state.rows[index].instruction} items={dockerfile} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} onChange={(event) => {
                     this.updateRows(event.target.value, index, 'instruction');
                 }} onSelect={(value) => {
                     this.updateRows(value, index, 'instruction');
@@ -322,23 +358,24 @@ class NewTable extends React.Component {
                 </Col>
                 <Col xs={12}>
                     <Accordion>
-                        <Panel header="Build options">
+                        <Panel header="Start options" eventKey="1">
                             <Row>
                                 <Col xs={12}>
                                     <Form inline>
                                         <ControlLabel>Tag Image:</ControlLabel>
                                         {' '}
-                                        <FormControl type="text" placeholder="repository" size="8"/><FormControl type="text" placeholder="tag" size="8"/></Form>
+                                        <FormControl type="text" placeholder="repository" size="8" onChange={this.handleFieldChange.bind(this, 'repository')}/><FormControl type="text" placeholder="tag" size="8" onChange={this.handleFieldChange.bind(this, 'tag')}/></Form>
                                 </Col>
                                 <Col xs={12}>
-                                  <Form inline>
-                                    <ControlLabel>PortBindings:</ControlLabel>
-                                    {' '}<FormControl type="text" placeholder="Host IP Address" size="8"/><FormControl type="text" placeholder="Host Port" size="8"/><FormControl type="text" placeholder="Container Port" size="8"/>
-                                    <FormControl componentClass="select" placeholder="protocol">
-                                        <option value="tcp">tcp</option>
-                                        <option value="udp">udp</option>
-                                    </FormControl>
-                                  </Form>
+                                    <Form inline>
+                                        <ControlLabel>PortBindings:</ControlLabel>
+                                        {' '}<FormControl type="text" placeholder="Host IP Address" size="8" onChange={this.handleFieldChange.bind(this, 'hostIP')}/><FormControl type="text" placeholder="Host Port" size="8" onChange={this.handleFieldChange.bind(this, 'hostPort')}/><FormControl type="text" placeholder="Container Port" size="8" onChange={this.handleFieldChange.bind(this, 'containerPort')}/>
+                                        <FormControl componentClass="select" onChange={this.handleFieldChange.bind(this, 'protocol')}>
+                                            <option value="">both</option>
+                                            <option value="tcp">tcp</option>
+                                            <option value="udp">udp</option>
+                                        </FormControl>
+                                    </Form>
                                 </Col>
                             </Row>
                         </Panel>
@@ -351,20 +388,15 @@ class NewTable extends React.Component {
     }
     createForm() {
 
-        if (this.state.selectedType) {
-            if (this.state.selectedType.type === 'docker') {
+        if (this.state.selectedType  === 'docker' ) {
                 return this.createDockerForm();
-            } else {
-                return (
-                    <h1>naaaahah</h1 >
-                );
-            }
+        }else if(this.state.selectedType  === 'docker'){
+            return (
+                <h1>vagrant</h1 >
+            );
         }
     }
     createModalBody = () => {
-        // let options = this.state.templates.map((item) => {
-        //     return (<Button bsStyle="success" key={item.type} onClick={this.setSelectedType.bind(this,item)}>{item.type}</Button>);
-        // });
         return (
             <div>
                 {this.createForm()}
