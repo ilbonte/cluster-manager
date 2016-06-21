@@ -479,6 +479,19 @@
         "run": {}
       },
       "uid": "bgzij38azdqo5h6hecrk"
+    },
+    {
+      "status": "saved",
+      "config": {
+        "build": [
+          {
+            "instruction": "FROM",
+            "arguments": ""
+          }
+        ],
+        "run": {}
+      },
+      "uid": "g9en7f4f916p06nk1v7z"
     }
   ]
 }
