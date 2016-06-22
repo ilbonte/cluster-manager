@@ -3,7 +3,7 @@
     {
       "status": "failed",
       "type": "docker",
-      "name": "sdf",
+      "name": "fucooffgitignore",
       "tag": "5",
       "config": {
         "build": [
