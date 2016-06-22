@@ -400,7 +400,7 @@ class ModalContent extends React.Component {
         const  {name,tag,hostIP,hostPort,containerPort}=this.state
         let body={
           status:'building',
-          type:this.state.selectedType,
+          type:this.props.type,
           name,
           tag,
           config:{

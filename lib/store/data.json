@@ -1,497 +1,107 @@
 {
-  "templates": [
-    {
-      "type": "docker",
-      "fields": {
-        "name": {
-          "type": "string",
-          "required": true,
-          "group": "info"
-        },
-        "imageTag": {
-          "type": "string",
-          "required": true,
-          "group": "generalInfo"
-        },
-        "entrypoint": {
-          "type": "string",
-          "required": false,
-          "group": "generalInfo"
-        },
-        "from": {
-          "type": "string",
-          "required": true,
-          "group": "generalInfo"
-        },
-        "log": {
-          "type": "string",
-          "required": false,
-          "group": "debug"
-        },
-        "status": {
-          "type": "string",
-          "required": false,
-          "group": "debug"
-        },
-        "steps": {
-          "type": "list",
-          "required": false,
-          "group": "generalInfo",
-          "fields": [
-            {
-              "label": "CMD",
-              "name": "CMD",
-              "type": "string"
-            },
-            {
-              "label": "action",
-              "name": "action",
-              "type": "string"
-            }
-          ]
-        },
-        "ports": {
-          "type": "list",
-          "required": false,
-          "group": "network",
-          "fields": [
-            {
-              "label": "Listening Address",
-              "name": "exaddress",
-              "type": "string"
-            },
-            {
-              "label": "Host Port",
-              "name": "export",
-              "type": "integer"
-            },
-            {
-              "label": "Container Port",
-              "name": "inport",
-              "type": "integer"
-            },
-            {
-              "label": "Protocol",
-              "name": "protocol",
-              "type": "string",
-              "values": [
-                "tcp",
-                "udp",
-                "both"
-              ]
-            }
-          ]
-        }
-      }
-    }
-  ],
   "images": [
     {
-      "type": "docker-template",
-      "name": "example template",
-      "config": {
-        "build": [
-          {
-            "from": "ubuntu"
-          },
-          {
-            "entrypoint": "ls"
-          },
-          {
-            "add": "www www"
-          },
-          {
-            "run": "apt-get update"
-          },
-          {
-            "run": "ls"
-          }
-        ],
-        "run": {
-          "adress": "0.0.0.0",
-          "hostport": "2222",
-          "guestport": "22"
-        }
-      },
-      "status": "saved",
-      "uid": "mszif5zm0bh89wimmqoj"
-    },
-    {
-      "type": "docker-template",
-      "name": "example template",
-      "config": {
-        "build": [
-          {
-            "from": "ubuntu"
-          },
-          {
-            "entrypoint": "ls"
-          },
-          {
-            "add": "www www"
-          },
-          {
-            "run": "apt-get update"
-          },
-          {
-            "run": "ls"
-          }
-        ],
-        "run": {
-          "adress": "0.0.0.0",
-          "hostport": "2222",
-          "guestport": "22"
-        }
-      },
-      "status": "saved",
-      "uid": "tcr63cohc0asr8auuy4p"
-    },
-    {
-      "type": "docker-template",
-      "name": "example template",
-      "config": {
-        "build": [
-          {
-            "from": "ubuntu"
-          },
-          {
-            "entrypoint": "ls"
-          },
-          {
-            "add": "www www"
-          },
-          {
-            "run": "apt-get update"
-          },
-          {
-            "run": "ls"
-          }
-        ],
-        "run": {
-          "adress": "0.0.0.0",
-          "hostport": "2222",
-          "guestport": "22"
-        }
-      },
-      "status": "saved",
-      "uid": "tw5p641ie9q6evqqyl6q"
-    },
-    {
+      "status": "failed",
       "type": "docker",
-      "name": "firstone:2",
-      "config": {
-        "build": [
-          {
-            "from": "ubuntu"
-          },
-          {
-            "entrypoint": "ps"
-          },
-          {
-            "run": "ls"
-          }
-        ],
-        "run": {
-          "adress": "0.0.0.0",
-          "hostport": "2222",
-          "guestport": "22"
-        }
-      },
-      "status": "building",
-      "uid": "2pxhrrla11pwismzkoae"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "repository": "fsdf",
-      "tag": "sdf",
+      "name": "sdf",
+      "tag": "5",
       "config": {
         "build": [
           {
             "instruction": "FROM",
-            "arguments": "sdf"
-          },
-          {
-            "instruction": "MAINTAINER",
-            "arguments": "sdf"
+            "arguments": "asdfashdasd"
           }
         ],
-        "run": {
-          "hostIP": "sdf",
-          "hostPort": "sdf",
-          "containerPort": "fsdf"
-        }
+        "run": {}
       },
-      "uid": "q1kp8tr1dhvu5ceuj2jc"
+      "uid": "vnyv8dhadyr7as5u291y"
     },
     {
-      "status": "saved",
+      "status": "failed",
       "type": "docker",
-      "repository": "sdf",
-      "tag": "sdf",
+      "name": "fdf",
+      "tag": "fd",
       "config": {
         "build": [
           {
             "instruction": "FROM",
-            "arguments": "sdf"
+            "arguments": "inasdjhthh"
           }
         ],
-        "run": {
-          "hostIP": "sdf",
-          "hostPort": "sdf",
-          "containerPort": "sdf"
-        }
+        "run": {}
       },
-      "uid": "w7ld9duxkbbhug9r3m0h"
+      "uid": "4460blx6r6lspuutqnfs",
+      "log": [
+        {
+          "stream": "Step 1 : FROM inasdjhthh\n"
+        },
+        {
+          "status": "Pulling repository docker.io/library/inasdjhthh"
+        },
+        {
+          "errorDetail": {
+            "message": "Error: image library/inasdjhthh not found"
+          },
+          "error": "Error: image library/inasdjhthh not found"
+        }
+      ]
     },
     {
-      "status": "saved",
+      "status": "failed",
       "type": "docker",
-      "repository": "first",
-      "tag": "1.0.0",
+      "name": "fsf",
+      "tag": "5",
       "config": {
         "build": [
           {
             "instruction": "FROM",
-            "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
+            "arguments": "ruccaflucca"
           }
         ],
-        "run": {
-          "hostIP": "0.0.0.0",
-          "hostPort": "20",
-          "containerPort": "2020"
-        }
+        "run": {}
       },
-      "uid": "v26bbuu8athgca4w8dlr"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "repository": "first",
-      "tag": "1.0.0",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": "ubuntu"
+      "uid": "3ambbisrqhmjk06wb097",
+      "log": [
+        {
+          "stream": "Step 1 : FROM ruccaflucca\n"
+        },
+        {
+          "status": "Pulling repository docker.io/library/ruccaflucca"
+        },
+        {
+          "errorDetail": {
+            "message": "Error: image library/ruccaflucca not found"
           },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
-          }
-        ],
-        "run": {
-          "hostIP": "0.0.0.0",
-          "hostPort": "20",
-          "containerPort": "2020"
+          "error": "Error: image library/ruccaflucca not found"
         }
-      },
-      "uid": "tfgnf9xsaiytzr6bju7u"
+      ]
     },
     {
-      "status": "saved",
+      "status": "builded",
       "type": "docker",
-      "repository": "first",
-      "tag": "1.0.0",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
-          }
-        ],
-        "run": {
-          "hostIP": "0.0.0.0",
-          "hostPort": "20",
-          "containerPort": "2020"
-        }
-      },
-      "uid": "lfxn1oxotw7mkgw9kf3g"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "repository": "first",
-      "tag": "1.0.0",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls ps"
-          }
-        ],
-        "run": {
-          "hostIP": "0.0.0.0",
-          "hostPort": "20",
-          "containerPort": "2020"
-        }
-      },
-      "uid": "xwfr597yczwl43oxsbiq"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "repository": "first",
-      "tag": "1.0.0",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
-          }
-        ],
-        "run": {
-          "hostIP": "0.0.0.0",
-          "hostPort": "20",
-          "containerPort": "2020"
-        }
-      },
-      "uid": "amcoc0023hfwl901hyl9"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "repository": "first",
-      "tag": "1.0.0",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
-          }
-        ],
-        "run": {
-          "hostIP": "0.0.0.0",
-          "hostPort": "20",
-          "containerPort": "2020"
-        }
-      },
-      "uid": "ssmio4zfbnpwhp0ba7oz"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "name": "machebello",
+      "name": "serioso",
       "tag": "1.0",
       "config": {
         "build": [
           {
             "instruction": "FROM",
             "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
           }
         ],
         "run": {}
       },
-      "uid": "2dtffsgz4th8x60b25nz"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "name": "machebello",
-      "tag": "1.1",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ps -a"
-          }
-        ],
-        "run": {}
-      },
-      "uid": "1tdlohdv50psbzancd8s"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "name": "machebello",
-      "tag": "1.1",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ps"
-          }
-        ],
-        "run": {}
-      },
-      "uid": "vv79u03894rd5dk1i31g"
-    },
-    {
-      "status": "saved",
-      "type": "docker",
-      "name": "machebello",
-      "tag": "1.1",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": "ubuntu"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ls"
-          },
-          {
-            "instruction": "RUN",
-            "arguments": "ps -a"
-          }
-        ],
-        "run": {}
-      },
-      "uid": "bgzij38azdqo5h6hecrk"
-    },
-    {
-      "status": "saved",
-      "config": {
-        "build": [
-          {
-            "instruction": "FROM",
-            "arguments": ""
-          }
-        ],
-        "run": {}
-      },
-      "uid": "g9en7f4f916p06nk1v7z"
+      "uid": "lxtg8gdqxdoy21d6v7bq",
+      "log": [
+        {
+          "stream": "Step 1 : FROM ubuntu\n"
+        },
+        {
+          "stream": " ---> 2fa927b5cdd3\n"
+        },
+        {
+          "stream": "Successfully built 2fa927b5cdd3\n"
+        }
+      ]
     }
   ]
 }
