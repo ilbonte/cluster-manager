@@ -3,8 +3,22 @@ import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import NewTable from './NewTable.jsx';
-
+import io from 'socket.io-client/socket.io';
+import { generateUid } from '../lib';
+const baseUrl = 'http://localhost:3000';
+let socket = io.connect(baseUrl);
 export default class App extends React.Component {
+  componentDidMount(){
+    if(! localStorage.getItem('userUid')){
+      localStorage.setItem('userUid', generateUid());
+    }
+    socket.emit('handshake', localStorage.getItem('userUid'));
+    socket.on('handshake', (data) => {
+      console.log('hs:');
+        localStorage.setItem('success', data.success);
+        console.log(data);
+    });
+  }
   constructor(props) {
     super(props);
   }

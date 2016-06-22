@@ -56,10 +56,12 @@
     "webpack-validator": "^2.1.1"
   },
   "dependencies": {
+    "lib": "^0.1.1",
     "react": "^15.1.0",
     "react-autocomplete": "^1.0.0-rc6",
     "react-bootstrap": "^0.29.4",
     "react-dom": "^15.1.0",
+    "socket.io-client": "^1.4.6",
     "validate-dockerfile": "^1.8.1",
     "xhr": "^2.2.0"
   }
