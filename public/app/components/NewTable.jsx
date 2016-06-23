@@ -21,10 +21,13 @@ import Popover from 'react-bootstrap/lib/Popover';
 import Row from 'react-bootstrap/lib/Row';
 import Table from 'react-bootstrap/lib/Table';
 import Well from 'react-bootstrap/lib/Well';
+/////////////////////////////////////////////////
+import {ObjectInspector} from 'react-inspector';
 import io from 'socket.io-client/socket.io';
 import { generateUid } from '../lib';
 let validateDockerfile = require('validate-dockerfile');
 const xhr = require('xhr');
+////////////////////////////////////////////////
 const baseUrl = 'http://localhost:3000';
 let socket = io.connect(baseUrl);
 const dockerfile = [
@@ -495,6 +498,9 @@ class TableRow extends React.Component {
     render() {
         let headerStyle = {}
         let {type, name, status, uid} = this.props.data;
+        if(type==='docker'){
+          name+=':'+this.props.data.tag;
+        }
         return (
             <div>
                 <Row style={headerStyle} onClick={() => this.setState({
@@ -508,9 +514,9 @@ class TableRow extends React.Component {
                 <Row>
                     <Collapse in={this.state.open}>
                         <div>
-                            <Well>
-                                {uid}
-                            </Well>
+
+                            <ObjectInspector  data={ this.props.data } />
+
                         </div>
                     </Collapse>
                 </Row>

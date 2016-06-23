@@ -15,8 +15,11 @@ export default class App extends React.Component {
     socket.emit('handshake', localStorage.getItem('userUid'));
     socket.on('handshake', (data) => {
       console.log('hs:');
-        localStorage.setItem('success', data.success);
+        // localStorage.setItem('success', data.success);
         console.log(data);
+    });
+    socket.on('stream', (data) => {
+      console.log(data);
     });
   }
   constructor(props) {

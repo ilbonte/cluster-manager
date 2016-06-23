@@ -61,6 +61,8 @@
     "react-autocomplete": "^1.0.0-rc6",
     "react-bootstrap": "^0.29.4",
     "react-dom": "^15.1.0",
+    "react-inspector": "^1.0.0",
+    "react-json-inspector": "^7.0.0",
     "socket.io-client": "^1.4.6",
     "validate-dockerfile": "^1.8.1",
     "xhr": "^2.2.0"
