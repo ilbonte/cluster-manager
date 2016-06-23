@@ -22,7 +22,7 @@ import Row from 'react-bootstrap/lib/Row';
 import Table from 'react-bootstrap/lib/Table';
 import Well from 'react-bootstrap/lib/Well';
 /////////////////////////////////////////////////
-import {ObjectInspector} from 'react-inspector';
+import Inspector from 'react-inspector';
 import io from 'socket.io-client/socket.io';
 import { generateUid } from '../lib';
 let validateDockerfile = require('validate-dockerfile');
@@ -515,7 +515,7 @@ class TableRow extends React.Component {
                     <Collapse in={this.state.open}>
                         <div>
 
-                            <ObjectInspector  data={ this.props.data } />
+                            <Inspector  data={ this.props.data } />
 
                         </div>
                     </Collapse>
