@@ -24,7 +24,7 @@ import Well from 'react-bootstrap/lib/Well';
 /////////////////////////////////////////////////
 import Inspector from 'react-inspector';
 import io from 'socket.io-client/socket.io';
-import { generateUid } from '../lib';
+import {generateUid} from '../lib';
 let validateDockerfile = require('validate-dockerfile');
 const xhr = require('xhr');
 ////////////////////////////////////////////////
@@ -497,9 +497,32 @@ class TableRow extends React.Component {
     }
     render() {
         let headerStyle = {}
-        let {type, name, status, uid} = this.props.data;
-        if(type==='docker'){
-          name+=':'+this.props.data.tag;
+        let {type, name, status, uid, log} = this.props.data;
+        let build = '';
+        let buildLog = '';
+        let inspection;
+        if (type === 'docker') {
+            if (name) {
+
+                name += ':' + this.props.data.tag;
+                inspection = this.props.data.inspect;
+
+                this.props.data.config.build.forEach(step => {
+                    build += step.instruction + ' ' + step.arguments + '\n';
+                });
+                if(log){
+                  log.forEach(step => {
+                    buildLog += step.stream+'\n';
+                  })
+                }
+            } else {
+                //only online
+                inspection = this.props.data;
+                name = '';
+                this.props.data.RepoTags.forEach(imageName => {
+                    name += imageName + ' || '
+                });
+            }
         }
         return (
             <div>
@@ -514,10 +537,19 @@ class TableRow extends React.Component {
                 <Row>
                     <Collapse in={this.state.open}>
                         <div>
-
-                            <Inspector  data={ this.props.data } />
-
-                        </div>
+                          <Col xs={6}>
+                            <h3>Build Steps</h3>
+                            <pre>{build}</pre>
+                          </Col>
+                        <Col xs={12}>
+                            <h3>Build log</h3>
+                            <pre>{buildLog}</pre>
+                        </Col>
+                        <Col xs={12}>
+                            <h3>Image Details</h3>
+                            <Inspector expandLevel={0} data={inspection}/>
+                        </Col>
+                      </div>
                     </Collapse>
                 </Row>
             </div>
