@@ -58,7 +58,7 @@
   "dependencies": {
     "lib": "^0.1.1",
     "react": "^15.1.0",
-    "react-autocomplete": "^1.0.0-rc6",
+    "react-autocomplete": "^1.0.0",
     "react-bootstrap": "^0.29.4",
     "react-dom": "^15.1.0",
     "react-inspector": "^1.0.0",

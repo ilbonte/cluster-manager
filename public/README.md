@@ -17,3 +17,7 @@ Beyond development, the boilerplate supports other tasks listed below:
 * `npm run stats` - Generates Webpack build statistics. See the [Analyzing Build Statistics](http://survivejs.com/webpack/building-with-webpack/analyzing-build-statistics/) chapter.
 
 Boilerplate source:https://github.com/survivejs/react-boilerplate
+
+## Hacked stuff
+* react-autocomplete/build/lib/Autocomplete.js @ isInputFocused -> remove React.findDOMNode since is deprecated. Discussion at: https://github.com/reactjs/react-autocomplete/issues/117
+* modal size is override in app/main.css 
