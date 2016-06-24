@@ -84,7 +84,7 @@ class ModalContent extends React.Component {
                             <FormControl type="text"/>
                         </Col>
                         <Col xs={4}>
-                            <Button onClick={this.save} bsStyle='success'>Save</Button>
+
                             <Button onClick={this.saveAndBuild} bsStyle='success'>Save and Build</Button>
                             <Button onClick={this.props.onHide} bsStyle='danger'>Close</Button>
                         </Col>
@@ -109,8 +109,7 @@ class ModalContent extends React.Component {
         }
     }
     removeRow = (index) => {
-        console.log(index);
-        console.log(this.state);
+
         var rows = this.state.rows.slice();
 
         if (rows.length > 1) {
@@ -137,8 +136,7 @@ class ModalContent extends React.Component {
     }
 
     handleFieldChange = (field, event) => {
-        console.log(field);
-        console.log(event.target.value)
+
         this.setState({[field]: event.target.value});
 
     }
@@ -288,19 +286,21 @@ class ModalContent extends React.Component {
                 }
             }
         }
-        console.log(body);
+
+        this.props.onHide();
         xhr({
             json: body,
             method: 'POST',
             uri: baseUrl + '/v1/images/new'
 
-        }, function(err, resp, body) {
-            console.log('responese');
+        }, (err, resp, body) => {
+            this.props.getData();
+
 
             if (resp.statusCode === 200) {
                 // this.setState({data: JSON.parse(body)});
 
-                console.log((body));
+
             } else {
                 console.log('Error posting new image');
                 console.log(err);

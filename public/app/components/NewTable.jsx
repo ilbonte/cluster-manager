@@ -16,6 +16,7 @@ import ModalContent from './ModalContent';
 import Inspector from 'react-inspector';
 import io from 'socket.io-client/socket.io';
 import {baseUrl} from '../lib';
+var _ = require('lodash/core');
 const xhr = require('xhr');
 ////////////////////////////////////////////////
 
@@ -47,22 +48,28 @@ class NewTable extends React.Component {
         };
     }
     componentDidMount() {
+        this.getData();
+        socket.on('streamLog', payload => {
+            let data = this.state.data.slice();
+            var i;
+            for (i = 0; i < data.length; i++) {
+                if (data[i].uid === payload.uid) {
+                    break;
+                }
+            }
+            if(data[i]){
+              if(!data[i].log){
+                data[i].log=payload.log;
+              }else{
+                data[i].log += payload.log;
+              }
 
-        xhr({
-            uri: baseUrl + this.props.getUrl
-        }, (err, resp, body) => {
-            // check resp.statusCode
-            if (resp.statusCode === 200) {
-                this.setState({data: JSON.parse(body)});
-                // console.log(resp);
-                console.log(JSON.parse(body));
-            } else {
-                console.log('Error getting data');
-                console.log(err);
+              this.setState({data});
             }
         });
 
     }
+
     render() {
         const {title} = this.props;
         let rowNodes = this.state.data.map((item) => {
@@ -88,7 +95,7 @@ class NewTable extends React.Component {
                         <Modal.Header closeButton>
                             <Modal.Title>Configure your image</Modal.Title>
                         </Modal.Header>
-                        <ModalContent type={this.state.selectedType} onHide={this.close}/>
+                        <ModalContent type={this.state.selectedType} onHide={this.close} getData={this.getData}/>
                     </Modal>
                 </Col>
             </Row>
@@ -113,12 +120,25 @@ class NewTable extends React.Component {
             </div>
         );
     }
+
+    getData = () => {
+        xhr({
+            uri: baseUrl + this.props.getUrl
+        }, (err, resp, body) => {
+            // check resp.statusCode
+            if (resp.statusCode === 200) {
+                this.setState({data: JSON.parse(body)});
+                // console.log(resp);
+
+            } else {
+                console.log('Error getting data');
+                console.log(err);
+            }
+        });
+    }
+
     close = () => {
         this.setState({showModal: false});
-    }
-    save = () => {
-        console.log('save');
-        console.log(this.state);
     }
 
     open = () => {
@@ -151,6 +171,7 @@ class TableRow extends React.Component {
         super();
         this.state = {};
     }
+
     render() {
         let headerStyle = {}
         let {type, name, status, uid, log} = this.props.data;
@@ -161,15 +182,23 @@ class TableRow extends React.Component {
             if (name) {
 
                 name += ':' + this.props.data.tag;
-                inspection = this.props.data.inspect||{};
+                inspection = this.props.data.inspect || {};
 
                 this.props.data.config.build.forEach(step => {
                     build += step.instruction + ' ' + step.arguments + '\n';
                 });
-                if(log){
-                  log.forEach(step => {
-                    buildLog += step.stream+'\n';
-                  })
+                if (log) {
+
+                  if(_.isString(log)){
+                    //streaming
+                      buildLog+=log;
+                  }else{
+                    // /if reading from db
+                    log.forEach(step => {
+                      buildLog += JSON.stringify(step,null,2) + '\n';
+                    })
+
+                  }
                 }
             } else {
                 //only online
@@ -193,19 +222,19 @@ class TableRow extends React.Component {
                 <Row>
                     <Collapse in={this.state.open}>
                         <div>
-                          <Col xs={6}>
-                            <h3>Build Steps</h3>
-                            <pre>{build}</pre>
-                          </Col>
-                        <Col xs={12}>
-                            <h3>Build log</h3>
-                            <pre>{buildLog}</pre>
-                        </Col>
-                        <Col xs={12}>
-                            <h3>Image Details</h3>
-                            <Inspector expandLevel={0} data={inspection}/>
-                        </Col>
-                      </div>
+                            <Col xs={6}>
+                                <h3>Build Steps</h3>
+                                <pre>{build}</pre>
+                            </Col>
+                            <Col xs={12}>
+                                <h3>Build log</h3>
+                                <pre>{buildLog}</pre>
+                            </Col>
+                            <Col xs={12}>
+                                <h3>Image Details</h3>
+                                <Inspector expandLevel={0} data={inspection}/>
+                            </Col>
+                        </div>
                     </Collapse>
                 </Row>
             </div>

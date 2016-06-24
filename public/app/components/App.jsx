@@ -5,21 +5,21 @@ import Col from 'react-bootstrap/lib/Col';
 import NewTable from './NewTable.jsx';
 import io from 'socket.io-client/socket.io';
 import {generateUid,baseUrl} from '../lib';
-let socket = io.connect(baseUrl);
+// let socket = io.connect(baseUrl);
 export default class App extends React.Component {
   componentDidMount(){
     if(! localStorage.getItem('userUid')){
       localStorage.setItem('userUid', generateUid());
     }
-    socket.emit('handshake', localStorage.getItem('userUid'));
-    socket.on('handshake', (data) => {
-      console.log('hs:');
-        // localStorage.setItem('success', data.success);
-        console.log(data);
-    });
-    socket.on('stream', (data) => {
-      console.log(data);
-    });
+    // socket.emit('handshake', localStorage.getItem('userUid'));
+    // socket.on('handshake', (data) => {
+    //   console.log('hs:');
+    //     // localStorage.setItem('success', data.success);
+    //     console.log(data);
+    // });
+    // socket.on('stream', (data) => {
+    //   console.log(data);
+    // });
   }
   constructor(props) {
     super(props);
