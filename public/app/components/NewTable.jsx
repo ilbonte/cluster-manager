@@ -52,6 +52,7 @@ class NewTable extends React.Component {
     }
     componentDidMount() {
         this.getData();
+        socket.on('refresh', () => this.getData());
         socket.on('streamLog', payload => {
             let data = this.state.data.slice();
             var i;
@@ -76,7 +77,7 @@ class NewTable extends React.Component {
     render() {
         const {title} = this.props;
         let rowNodes = this.state.data.map((item) => {
-            return (<TableRow data={item} key={item.uid}/>);
+            return (<TableRow data={item} key={item.uid} getData={this.getData}/>);
         });
         // console.log(rowNodes);
         let headerContent = null;
@@ -126,6 +127,7 @@ class NewTable extends React.Component {
     }
 
     getData = () => {
+      console.log('getting data');
         xhr({
             uri: baseUrl + this.props.getUrl
         }, (err, resp, body) => {
@@ -224,7 +226,7 @@ class TableRow extends React.Component {
                     <TableCell>{status}</TableCell>
                     <TableCell id='ignoreExpansion' onClick={() => this.setState({
                         open: false
-                    })}><ActionsButtons data={this.props.data} /></TableCell>
+                    })}><ActionsButtons data={this.props.data} getData={this.props.getData}/></TableCell>
                 </Row>
                 <Row>
                     <Collapse in={this.state.open}>
@@ -266,7 +268,7 @@ class ActionsButtons extends React.Component{
     let {type,name,status} = this.props.data;
     let buttons=[];
 
-    let deleteButton = <DeleteButton key={1} data={this.props.data}/>;
+    let deleteButton = <DeleteButton key={1} data={this.props.data} getData={this.props.getData}/>;
     let editButton = <Button  bsSize={actionButtonSize}><Glyphicon glyph="wrench" key={2}/></Button>;
     let duplicateButton = <Button bsStyle="info" bsSize={actionButtonSize}><Glyphicon glyph="duplicate" key={3}/></Button>;
     let runButton = <Button bsStyle="success" bsSize={actionButtonSize}><Glyphicon glyph="send" key={4}/></Button>;
@@ -292,7 +294,9 @@ class ActionsButtons extends React.Component{
         break;
       case 'failed':
       //failed=duplicate|edit|delete
-
+      buttons.push(duplicateButton);
+      buttons.push(editButton);
+      buttons.push(deleteButton);
         break;
       default:
 
@@ -314,15 +318,16 @@ class DeleteButton extends React.Component {
     }
     sendDelete  = (event) =>{
       xhr({
-          
+
           method: 'DELETE',
           uri: baseUrl + '/v1/images/'+this.props.data.uid
 
       }, (err, resp, body) => {
+        this.props.getData();
+        console.log('asdasd');
 
           if (resp.statusCode === 200) {
               // this.setState({data: JSON.parse(body)});
-
 
           } else {
               console.log('Error posting new image');
