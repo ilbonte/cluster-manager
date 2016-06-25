@@ -59,14 +59,20 @@ const dockerfile = [
 class ModalContent extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
+        console.log(this.props.itemData);
+        if(this.props.itemData){
+          this.state = {rows:this.props.itemData.config.build};
+        }else{
+          this.state = {
             rows: [
-                {
-                    instruction: '',
-                    arguments: ''
-                }
+              {
+                instruction: '',
+                arguments: ''
+              }
             ]
-        };
+          };
+
+        }
     }
     render() {
         return (
@@ -288,6 +294,28 @@ class ModalContent extends React.Component {
         }
 
         this.props.onHide();
+      if(this.props.itemData){
+        //edit image
+        xhr({
+            json: body,
+            method: 'put',
+            uri: baseUrl + '/v1/images/'+this.props.itemData.uid
+
+        }, (err, resp, body) => {
+          this.props.getData();
+
+
+            if (resp.statusCode === 200) {
+                // this.setState({data: JSON.parse(body)});
+
+
+            } else {
+                console.log('Errorupdatingimage');
+                console.log(err);
+            }
+        })
+      }else{
+        //new image
         xhr({
             json: body,
             method: 'POST',
@@ -306,6 +334,8 @@ class ModalContent extends React.Component {
                 console.log(err);
             }
         })
+      }
+
     }
 }
 

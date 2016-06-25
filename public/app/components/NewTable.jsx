@@ -17,7 +17,7 @@ import ModalContent from './ModalContent';
 ///////////////////////////////////////////////
 import Inspector from 'react-inspector';
 import io from 'socket.io-client/socket.io';
-import {baseUrl} from '../lib';
+import {baseUrl,removeByKey} from '../lib';
 const _ = require('lodash/core');
 const xhr = require('xhr');
 ////////////////////////////////////////////////
@@ -77,7 +77,7 @@ class NewTable extends React.Component {
     render() {
         const {title} = this.props;
         let rowNodes = this.state.data.map((item) => {
-            return (<TableRow data={item} key={item.uid} getData={this.getData}/>);
+            return (<TableRow data={item} key={item.uid} getData={this.getData} open={this.open}/>);
         });
         // console.log(rowNodes);
         let headerContent = null;
@@ -100,7 +100,7 @@ class NewTable extends React.Component {
                         <Modal.Header closeButton>
                             <Modal.Title>Configure your image</Modal.Title>
                         </Modal.Header>
-                        <ModalContent type={this.state.selectedType} onHide={this.close} getData={this.getData}/>
+                        <ModalContent type={this.state.selectedType} onHide={this.close} getData={this.getData}  itemData={this.state.itemData}/>
                     </Modal>
                 </Col>
             </Row>
@@ -144,10 +144,15 @@ class NewTable extends React.Component {
     }
 
     close = () => {
+      this.setState({itemData:false});
         this.setState({showModal: false});
     }
 
-    open = () => {
+    open = (itemData) => {
+      if(itemData){
+        this.setState({selectedType: itemData.type});
+        this.setState({itemData});
+      }
         this.setState({showModal: true});
     }
     setSelectedType = (type) => {
@@ -226,7 +231,7 @@ class TableRow extends React.Component {
                     <TableCell>{status}</TableCell>
                     <TableCell id='ignoreExpansion' onClick={() => this.setState({
                         open: false
-                    })}><ActionsButtons data={this.props.data} getData={this.props.getData}/></TableCell>
+                    })}><ActionsButtons data={this.props.data} getData={this.props.getData} open={this.props.open}/></TableCell>
                 </Row>
                 <Row>
                     <Collapse in={this.state.open}>
@@ -269,7 +274,7 @@ class ActionsButtons extends React.Component{
     let buttons=[];
 
     let deleteButton = <DeleteButton key={1} data={this.props.data} getData={this.props.getData}/>;
-    let editButton = <Button  bsSize={actionButtonSize}><Glyphicon glyph="wrench" key={2}/></Button>;
+    let editButton = <Button  bsSize={actionButtonSize} onClick={this.edit}><Glyphicon glyph="wrench" key={2} /></Button>;
     let duplicateButton = <Button bsStyle="info" bsSize={actionButtonSize}><Glyphicon glyph="duplicate" key={3}/></Button>;
     let runButton = <Button bsStyle="success" bsSize={actionButtonSize}><Glyphicon glyph="send" key={4}/></Button>;
 
@@ -302,8 +307,12 @@ class ActionsButtons extends React.Component{
 
     }
 
-
     return <ButtonGroup>{buttons}</ButtonGroup>
+  }
+  edit = () =>{
+    console.log('edit');
+    // this.props.open();
+    this.props.open(this.props.data);
   }
 }
 
