@@ -291,7 +291,7 @@ class ModalContent extends React.Component {
         xhr({
             json: body,
             method: 'POST',
-            uri: baseUrl + '/v1/images/new'
+            uri: baseUrl + '/v1/images/'
 
         }, (err, resp, body) => {
             this.props.getData();

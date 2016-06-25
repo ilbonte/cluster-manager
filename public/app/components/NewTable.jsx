@@ -1,6 +1,8 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Accordion from 'react-bootstrap/lib/Accordion';
 import Button from 'react-bootstrap/lib/Button';
+import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Col from 'react-bootstrap/lib/Col';
 import Collapse from 'react-bootstrap/lib/Collapse';
@@ -16,9 +18,10 @@ import ModalContent from './ModalContent';
 import Inspector from 'react-inspector';
 import io from 'socket.io-client/socket.io';
 import {baseUrl} from '../lib';
-var _ = require('lodash/core');
+const _ = require('lodash/core');
 const xhr = require('xhr');
 ////////////////////////////////////////////////
+const actionButtonSize='xsmall';
 
 let socket = io.connect(baseUrl);
 
@@ -58,7 +61,7 @@ class NewTable extends React.Component {
                 }
             }
             if(data[i]){
-              if(!data[i].log){
+              if(!data[i].log){//fix undefined as first
                 data[i].log=payload.log;
               }else{
                 data[i].log += payload.log;
@@ -75,6 +78,7 @@ class NewTable extends React.Component {
         let rowNodes = this.state.data.map((item) => {
             return (<TableRow data={item} key={item.uid}/>);
         });
+        // console.log(rowNodes);
         let headerContent = null;
         if (title.toLowerCase() === 'images') {
             headerContent = <Row>
@@ -178,6 +182,7 @@ class TableRow extends React.Component {
         let build = '';
         let buildLog = '';
         let inspection;
+
         if (type === 'docker') {
             if (name) {
 
@@ -211,27 +216,29 @@ class TableRow extends React.Component {
         }
         return (
             <div>
-                <Row style={headerStyle} onClick={() => this.setState({
+                <Row style={headerStyle} onClick={(event) => {if(event.target.textContent) this.setState({
                     open: !this.state.open
-                })}>
+                })}}>
                     <TableCell>{type}</TableCell>
                     <TableCell>{name}</TableCell>
                     <TableCell>{status}</TableCell>
-                    <TableCell>Bei botoni</TableCell>
+                    <TableCell id='ignoreExpansion' onClick={() => this.setState({
+                        open: false
+                    })}><ActionsButtons data={this.props.data} /></TableCell>
                 </Row>
                 <Row>
                     <Collapse in={this.state.open}>
                         <div>
                             <Col xs={6}>
                                 <h3>Build Steps</h3>
-                                <pre>{build}</pre>
+                                <pre style={{maxHeight:'300px'}}>{build}</pre>
                             </Col>
                             <Col xs={12}>
                                 <h3>Build log</h3>
-                                <pre>{buildLog}</pre>
+                                <Scroller >{buildLog}</Scroller>
                             </Col>
                             <Col xs={12}>
-                                <h3>Image Details</h3>
+                                <h3>Image Inspect Details</h3>
                                 <Inspector expandLevel={0} data={inspection}/>
                             </Col>
                         </div>
@@ -239,6 +246,91 @@ class TableRow extends React.Component {
                 </Row>
             </div>
         );
+    }
+}
+
+class Scroller extends React.Component{
+  componentDidMount(){
+    // let DOMNode=ReactDOM.findDOMNode(this);
+    // console.log(DOMNode);
+    // DOMNode.scrollTop = 10000; //scrollHeight
+    // console.log(DOMNode.scrollTop);
+  }
+  render(){
+    return <pre style={{maxHeight:'100px'}}>{this.props.children}</pre>
+  }
+}
+class ActionsButtons extends React.Component{
+
+  render(){
+    let {type,name,status} = this.props.data;
+    let buttons=[];
+
+    let deleteButton = <DeleteButton key={1} data={this.props.data}/>;
+    let editButton = <Button  bsSize={actionButtonSize}><Glyphicon glyph="wrench" key={2}/></Button>;
+    let duplicateButton = <Button bsStyle="info" bsSize={actionButtonSize}><Glyphicon glyph="duplicate" key={3}/></Button>;
+    let runButton = <Button bsStyle="success" bsSize={actionButtonSize}><Glyphicon glyph="send" key={4}/></Button>;
+
+    switch (status) {
+      case 'saved':
+      //saved=duplicate|edit|delete
+        buttons.push(duplicateButton);
+        buttons.push(editButton);
+        buttons.push(deleteButton);
+        break;
+      case 'saved+builded':
+      //builded=run|duplicate|edit|delete
+      buttons.push(runButton);
+      buttons.push(duplicateButton);
+      buttons.push(editButton);
+      buttons.push(deleteButton);
+
+        break;
+      case 'builded':
+      //builded=run|duplicate|edit|delete
+
+        break;
+      case 'failed':
+      //failed=duplicate|edit|delete
+
+        break;
+      default:
+
+    }
+
+
+    return <ButtonGroup>{buttons}</ButtonGroup>
+  }
+}
+
+class DeleteButton extends React.Component {
+    render() {
+        let cellStyle = {
+            border: '1px solid black'
+        }
+        return (
+            <Button bsStyle="danger" bsSize={actionButtonSize}><Glyphicon glyph="trash" onClick={this.sendDelete} /></Button>
+        );
+    }
+    sendDelete  = (event) =>{
+      xhr({
+          
+          method: 'DELETE',
+          uri: baseUrl + '/v1/images/'+this.props.data.uid
+
+      }, (err, resp, body) => {
+
+          if (resp.statusCode === 200) {
+              // this.setState({data: JSON.parse(body)});
+
+
+          } else {
+              console.log('Error posting new image');
+              console.log(err);
+          }
+      })
+      console.log(this.props.data);
+
     }
 }
 class TableCell extends React.Component {
