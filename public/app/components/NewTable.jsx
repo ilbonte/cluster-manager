@@ -286,7 +286,7 @@ class ActionsButtons extends React.Component{
         buttons.push(deleteButton);
         break;
       case 'saved+builded':
-      //builded=run|duplicate|edit|delete
+      //saved+builded=run|duplicate|edit|delete
       buttons.push(runButton);
       buttons.push(duplicateButton);
       buttons.push(editButton);
@@ -294,8 +294,10 @@ class ActionsButtons extends React.Component{
 
         break;
       case 'builded':
-      //builded=run|duplicate|edit|delete
-
+      //builded=|delete
+      if(this.props.data.RepoTags.length===1){
+        buttons.push(deleteButton);
+      }
         break;
       case 'failed':
       //failed=duplicate|edit|delete
@@ -326,8 +328,14 @@ class DeleteButton extends React.Component {
         );
     }
     sendDelete  = (event) =>{
+      let json={};
+      if(this.props.data.RepoTags){
+        if(this.props.data.RepoTags.length===1){
+          json.name=this.props.data.RepoTags[0];
+        }
+      }
       xhr({
-
+          json,
           method: 'DELETE',
           uri: baseUrl + '/v1/images/'+this.props.data.uid
 
