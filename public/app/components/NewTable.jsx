@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Accordion from 'react-bootstrap/lib/Accordion';
 import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Col from 'react-bootstrap/lib/Col';
 import Collapse from 'react-bootstrap/lib/Collapse';
@@ -14,14 +13,15 @@ import Row from 'react-bootstrap/lib/Row';
 import Well from 'react-bootstrap/lib/Well';
 /////////////////////////////////////////////////
 import ModalContent from './ModalContent';
+import ActionsButtons from './ActionsButtons';
 ///////////////////////////////////////////////
 import Inspector from 'react-inspector';
 import io from 'socket.io-client/socket.io';
-import {baseUrl, removeByKey} from '../lib';
+import {baseUrl} from '../lib';
 const _ = require('lodash/core');
 const xhr = require('xhr');
 ////////////////////////////////////////////////
-const actionButtonSize = 'xsmall';
+
 
 let socket = io.connect(baseUrl);
 
@@ -266,108 +266,6 @@ class Scroller extends React.Component {
     }
     render() {
         return <pre style={{maxHeight:'100px'}}>{this.props.children}</pre>
-    }
-}
-class ActionsButtons extends React.Component {
-
-    render() {
-        let {type, name, status} = this.props.data;
-        let buttons = [];
-
-        let deleteButton = <DeleteButton key={1} data={this.props.data} getData={this.props.getData}/>;
-        let editButton = <Button bsSize={actionButtonSize} onClick={this.edit}><Glyphicon glyph="wrench" key={2}/></Button>;
-        let duplicateButton = <DuplicateButton data={this.props.data}  open={this.props.open}/>
-        let runButton = <Button bsStyle="success" bsSize={actionButtonSize}><Glyphicon glyph="send" key={4}/></Button>;
-
-        switch (status) {
-            case 'saved':
-                //saved=duplicate|edit|delete
-                buttons.push(duplicateButton);
-                buttons.push(editButton);
-                buttons.push(deleteButton);
-                break;
-            case 'saved+builded':
-                //saved+builded=run|duplicate|edit|delete
-                buttons.push(runButton);
-                buttons.push(duplicateButton);
-                buttons.push(editButton);
-                buttons.push(deleteButton);
-
-                break;
-            case 'builded':
-                //builded=|delete
-                if (this.props.data.RepoTags.length === 1) {
-                    buttons.push(deleteButton);
-                }
-                break;
-            case 'failed':
-                //failed=duplicate|edit|delete
-                buttons.push(duplicateButton);
-                buttons.push(editButton);
-                buttons.push(deleteButton);
-                break;
-            default:
-
-        }
-
-        return <ButtonGroup>{buttons}</ButtonGroup>
-    }
-    edit = () => {
-        console.log('edit');
-        // this.props.open();
-        this.props.data._action = 'edit';
-        this.props.open(this.props.data);
-    }
-}
-
-class DeleteButton extends React.Component {
-    render() {
-        let cellStyle = {
-            border: '1px solid black'
-        }
-        return (
-            <Button bsStyle="danger" bsSize={actionButtonSize}><Glyphicon glyph="trash" onClick={this.sendDelete}/></Button>
-        );
-    }
-    sendDelete = (event) => {
-        let json = {};
-        if (this.props.data.RepoTags) {
-            if (this.props.data.RepoTags.length === 1) {
-                json.name = this.props.data.RepoTags[0];
-            }
-        }
-        xhr({
-            json,
-            method: 'DELETE',
-            uri: baseUrl + '/v1/images/' + this.props.data.uid
-
-        }, (err, resp, body) => {
-            this.props.getData();
-
-            if (resp.statusCode === 200) {
-                // this.setState({data: JSON.parse(body)});
-
-            } else {
-                console.log('Error posting new image');
-                console.log(err);
-            }
-        })
-
-    }
-}
-
-class DuplicateButton extends React.Component {
-    duplicate=()=> {
-        this.props.data._action = 'duplicate';
-        this.props.open(this.props.data);
-    }
-    render() {
-        let cellStyle = {
-            border: '1px solid black'
-        }
-        return (
-            <Button bsStyle="info" bsSize={actionButtonSize} onClick={this.duplicate}><Glyphicon glyph="duplicate" key={3}/></Button>
-        );
     }
 }
 
