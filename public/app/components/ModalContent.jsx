@@ -83,20 +83,8 @@ class ModalContent extends React.Component {
                     {this.createForm()}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Row>
-                        <Col xs={3}>
-                            <ControlLabel>Name this template</ControlLabel>
-                        </Col>
-
-                        <Col xs={5}>
-                            <FormControl type="text"/>
-                        </Col>
-                        <Col xs={4}>
-
-                            <Button onClick={this.saveAndBuild} bsStyle='success'>Save and Build</Button>
-                            <Button onClick={this.props.onHide} bsStyle='danger'>Close</Button>
-                        </Col>
-                    </Row>
+                    <Button onClick={this.saveAndBuild} bsStyle='success'>Save and Build</Button>
+                    <Button onClick={this.props.onHide} bsStyle='danger'>Close</Button>
                 </Modal.Footer>
             </div>
         )
@@ -248,7 +236,7 @@ class ModalContent extends React.Component {
                 </Col>
                 <Col xs={12}>
                     <Accordion>
-                        <Panel header="Start options" eventKey="1">
+                        <Panel header="Start options" >
                             <Row>
                                 <Col xs={12}>
                                     <Form inline>
@@ -256,17 +244,7 @@ class ModalContent extends React.Component {
                                         {' '}
                                         <FormControl type="text" placeholder="name" size="8" onChange={this.handleFieldChange.bind(this, 'name')}/><FormControl type="text" placeholder="tag" size="8" onChange={this.handleFieldChange.bind(this, 'tag')}/></Form>
                                 </Col>
-                                <Col xs={12}>
-                                    <Form inline>
-                                        <ControlLabel>PortBindings:</ControlLabel>
-                                        {' '}<FormControl type="text" placeholder="Host IP Address" size="8" onChange={this.handleFieldChange.bind(this, 'hostIP')}/><FormControl type="text" placeholder="Host Port" size="8" onChange={this.handleFieldChange.bind(this, 'hostPort')}/><FormControl type="text" placeholder="Container Port" size="8" onChange={this.handleFieldChange.bind(this, 'containerPort')}/>
-                                        <FormControl componentClass="select" onChange={this.handleFieldChange.bind(this, 'protocol')}>
-                                            <option value="">both</option>
-                                            <option value="tcp">tcp</option>
-                                            <option value="udp">udp</option>
-                                        </FormControl>
-                                    </Form>
-                                </Col>
+
                             </Row>
                         </Panel>
                     </Accordion>
