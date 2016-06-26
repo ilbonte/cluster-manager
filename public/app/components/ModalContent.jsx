@@ -19,7 +19,7 @@ import Table from 'react-bootstrap/lib/Table';
 ///////////////////////////////////////
 let validateDockerfile = require('validate-dockerfile');
 const xhr = require('xhr');
-import {generateUid,baseUrl} from '../lib';
+import {generateUid, baseUrl} from '../lib';
 ////////////////
 const dockerfile = [
     {
@@ -60,17 +60,19 @@ class ModalContent extends React.Component {
     constructor(props) {
         super(props);
         console.log(this.props.itemData);
-        if(this.props.itemData){
-          this.state = {rows:this.props.itemData.config.build};
-        }else{
-          this.state = {
-            rows: [
-              {
-                instruction: '',
-                arguments: ''
-              }
-            ]
-          };
+        if (this.props.itemData) {
+            this.state = {
+                rows: this.props.itemData.config.build
+            };
+        } else {
+            this.state = {
+                rows: [
+                    {
+                        instruction: '',
+                        arguments: ''
+                    }
+                ]
+            };
 
         }
     }
@@ -294,48 +296,57 @@ class ModalContent extends React.Component {
         }
 
         this.props.onHide();
-      if(this.props.itemData){
-        //edit image
-        xhr({
-            json: body,
-            method: 'put',
-            uri: baseUrl + '/v1/images/'+this.props.itemData.uid
+        if (this.props.itemData) {
+            switch (this.props.itemData._action) {
+                case 'edit':
+                    xhr({
+                        json: body,
+                        method: 'put',
+                        uri: baseUrl + '/v1/images/' + this.props.itemData.uid
 
-        }, (err, resp, body) => {
-          this.props.getData();
+                    }, (err, resp, body) => {
+                        this.props.getData();
+                        if (resp.statusCode === 200) {
+                            // this.setState({data: JSON.parse(body)});
 
+                        } else {
+                            console.log('Errorupdatingimage');
+                            console.log(err);
+                        }
+                    });
+                    break;
+                case 'duplicate':
+                    this.sendImage(body);
+                    break;
+                default:
 
-            if (resp.statusCode === 200) {
-                // this.setState({data: JSON.parse(body)});
-
-
-            } else {
-                console.log('Errorupdatingimage');
-                console.log(err);
             }
-        })
-      }else{
-        //new image
+            //edit image
+
+        } else {
+            //new image
+            this.sendImage(body);
+        }
+
+    }
+
+    sendImage = (json) => {
         xhr({
-            json: body,
+            json,
             method: 'POST',
             uri: baseUrl + '/v1/images/new'
 
         }, (err, resp, body) => {
-          this.props.getData();
-
+            this.props.getData();
 
             if (resp.statusCode === 200) {
                 // this.setState({data: JSON.parse(body)});
-
 
             } else {
                 console.log('Error posting new image');
                 console.log(err);
             }
         })
-      }
-
     }
 }
 
