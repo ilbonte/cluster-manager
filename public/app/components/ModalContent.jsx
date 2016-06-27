@@ -19,6 +19,7 @@ import Table from 'react-bootstrap/lib/Table';
 ///////////////////////////////////////
 let validateDockerfile = require('validate-dockerfile');
 const xhr = require('xhr');
+var Dropzone = require('react-dropzone');
 import {generateUid, baseUrl} from '../lib';
 ////////////////
 function matchStateToTerm(state, value) {
@@ -339,7 +340,12 @@ class ModalContent extends React.Component {
                 </tr>
             );
         });
-
+        let eBox = undefined;
+        let savedDockerfile = undefined;
+        if (this.state.provisioning === 'docker') {
+            eBox = <ErrorsBox dockerfile={this.state.script}/>
+            savedDockerfile = <Saved/>
+        }
         return (
             <Row>
                 <Col xs={6}>
@@ -388,7 +394,43 @@ class ModalContent extends React.Component {
                     <Accordion >
                         <Panel eventKey="3" header="Provisions options">
                             <Row>
-                                <Col xs={12}></Col>
+                                <Col xs={4}>
+                                    <FormGroup>
+                                        <ControlLabel>Provisioner</ControlLabel>
+                                        <FormControl componentClass="select" placeholder="select" onChange={(event) => {
+                                            this.setState({provisioning: event.target.value})
+                                        }}>
+                                            <option value="">Select
+                                            </option>
+
+                                            <option value="docker">Docker
+                                            </option>
+                                            <option value="shell">Shell</option>
+
+                                        </FormControl>
+                                        <div style={{
+                                            border: '1px dashed lightgray'
+                                        }}>
+                                            <Dropzone onDrop={this.onDrop} style={{
+                                                width: '100%',
+                                                height: '100px'
+                                            }}>
+                                                <div>Click to select or drop file here</div>
+                                            </Dropzone>
+                                            {savedDockerfile}
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                                <Col xs={8}>
+                                    <ControlLabel>Script</ControlLabel>
+
+                                    <FormControl style={{
+                                        padding: '1px',
+                                        height:'200px'
+                                    }} componentClass="textarea" value={this.state.script} onChange={(event) => {
+                                        this.setState({script: event.target.value})
+                                    }}/> {eBox}
+                                </Col>
                             </Row>
                         </Panel>
                     </Accordion>
@@ -401,6 +443,23 @@ class ModalContent extends React.Component {
         )
     }
 
+    onDrop = (file) =>{
+
+      xhr({
+          method: 'get',
+          uri: file.preview
+      }, (err, resp, body) => {
+        console.log(body);
+          if (resp.statusCode === 200) {
+              // this.setState({data: JSON.parse(body)});
+              this.setState({script:body})
+          } else {
+              console.log('Errorupdatingimage');
+              console.log(err);
+          }
+      });
+
+    }
     //***************************************************************
     //*********************VAGRANT END******************************************
 
@@ -519,6 +578,17 @@ class ErrorsBox extends React.Component {
                 <div>{errors}</div>
             )
         }
+    }
+}
+
+class Saved extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+      console.log(this.state);
+      return (<Button bsSize="small" onClick={this.saveAndBuild} bsStyle='success'>Choose from platform</Button>);
+
     }
 }
 

@@ -61,6 +61,7 @@
     "react-autocomplete": "^1.0.0",
     "react-bootstrap": "^0.29.4",
     "react-dom": "^15.1.0",
+    "react-dropzone": "^3.5.1",
     "react-inspector": "^1.0.0",
     "react-json-inspector": "^7.0.0",
     "socket.io-client": "^1.4.6",
