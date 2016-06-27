@@ -21,6 +21,9 @@ let validateDockerfile = require('validate-dockerfile');
 const xhr = require('xhr');
 import {generateUid, baseUrl} from '../lib';
 ////////////////
+function matchStateToTerm(state, value) {
+    return (state.name.toLowerCase().indexOf(value.toLowerCase()) !== -1);
+}
 const dockerfile = [
     {
         name: 'FROM'
@@ -56,6 +59,68 @@ const dockerfile = [
         name: 'STOPSIGNAL'
     }
 ];
+const vagrantConfig = {
+    forwarded_port: [
+        {
+            name: 'guest'
+        }, {
+            name: 'guest_ip'
+        }, {
+            name: 'host'
+        }, {
+            name: 'host_ip'
+        }, {
+            name: 'protocol'
+        }, {
+            name: 'auto_correct'
+        }
+    ],
+    private_network: [
+        {
+            name: 'type'
+        }, {
+            name: 'ip'
+        }, {
+            name: 'netmask'
+        }, {
+            name: 'auto_config'
+        }
+    ],
+    public_network: [
+        {
+            name: 'use_dhcp_assigned_default_route'
+        }, {
+            name: 'ip'
+        }, {
+            name: 'bridge'
+        }, {
+            name: 'auto_config'
+        }
+    ]
+};
+const styles = {
+    item: {
+        padding: '2px 6px',
+        cursor: 'default'
+    },
+    highlightedItem: {
+        color: '#98978b',
+        background: '#f8f5f0',
+        padding: '2px 6px',
+        cursor: 'default'
+    },
+    menu: {
+        borderRadius: '3px',
+        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+        background: 'rgba(255, 255, 255, 0.9)',
+        padding: '2px 0',
+        fontSize: '90%',
+        position: 'fixed',
+        overflow: 'auto',
+        maxHeight: '50%',
+        zIndex: '1'
+    }
+};
 class ModalContent extends React.Component {
     constructor(props) {
         super(props);
@@ -71,9 +136,14 @@ class ModalContent extends React.Component {
                         instruction: '',
                         arguments: ''
                     }
+                ],
+                networkRows: [
+                    {
+                        instruction: '',
+                        arguments: ''
+                    }
                 ]
             };
-
         }
     }
     render() {
@@ -91,44 +161,46 @@ class ModalContent extends React.Component {
     }
 
     componentDidMount() {
-        this.updateRows('FROM', 0, 'instruction');
+        this.updateStateElement('rows', 'FROM', 0, 'instruction');
     }
 
     createForm() {
 
         if (this.props.type === 'docker') {
             return this.createDockerForm();
-        } else if (this.props.type === 'docker') {
-            return (
-                <h1>vagrant</h1 >
-            );
+        } else if (this.props.type === 'vagrant') {
+            return this.createVagrantForm();
         }
     }
-    removeRow = (index) => {
+    removeStateElement = (elem, index) => {
 
-        var rows = this.state.rows.slice();
+        var rows = this.state[elem].slice();
 
         if (rows.length > 1) {
             rows.splice(index, 1);
         }
-        this.setState({rows});
+        this.setState({[elem]: rows});
 
     }
 
-    addNewRow = (index) => {
-
-        var rows = this.state.rows.slice();
+    addStateElement = (elem, index) => {
+        let rows = this.state[elem].slice();
+        console.log(rows);
         rows.splice(index + 1, 0, {
             instruction: '',
             arguments: ''
         });
-        this.setState({rows});
+        console.log(rows);
+
+        this.setState({[elem]: rows});
+        // console.log(index);
+        // console.log(this.state[elem]);
     }
 
-    updateRows = (value, index, field) => {
-        var rows = this.state.rows.slice();
+    updateStateElement = (elem, value, index, field) => {
+        let rows = this.state[elem].slice();
         rows[index][field] = value;
-        this.setState({rows})
+        this.setState({[elem]: rows})
     }
 
     handleFieldChange = (field, event) => {
@@ -145,33 +217,6 @@ class ModalContent extends React.Component {
     }
 
     createDockerForm() {
-        let styles = {
-            item: {
-                padding: '2px 6px',
-                cursor: 'default'
-            },
-            highlightedItem: {
-                color: '#98978b',
-                background: '#f8f5f0',
-                padding: '2px 6px',
-                cursor: 'default'
-            },
-            menu: {
-                borderRadius: '3px',
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-                background: 'rgba(255, 255, 255, 0.9)',
-                padding: '2px 0',
-                fontSize: '90%',
-                position: 'fixed',
-                overflow: 'auto',
-                maxHeight: '50%',
-                zIndex: '1'
-            }
-        }
-
-        function matchStateToTerm(state, value) {
-            return (state.name.toLowerCase().indexOf(value.toLowerCase()) !== -1);
-        }
 
         var rowNodes = this.state.rows.map((item, index) => {
 
@@ -181,9 +226,9 @@ class ModalContent extends React.Component {
                     <td><Autocomplete inputProps={{
                     size: '10'
                 }} menuStyle={styles.menu} value={this.state.rows[index].instruction} items={dockerfile} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} onChange={(event) => {
-                    this.updateRows(event.target.value, index, 'instruction');
+                    this.updateStateElement('rows', event.target.value, index, 'instruction');
                 }} onSelect={(value) => {
-                    this.updateRows(value, index, 'instruction');
+                    this.updateStateElement('rows', value, index, 'instruction');
                 }} renderItem={(item, isHighlighted) => (
                     <div style={isHighlighted
                         ? styles.highlightedItem
@@ -196,14 +241,14 @@ class ModalContent extends React.Component {
                         <FormControl value={this.state.rows[index].arguments} style={{
                             padding: '1px'
                         }} componentClass="textarea" onChange={(event) => {
-                            this.updateRows(event.target.value, index, 'arguments');
+                            this.updateStateElement('rows', event.target.value, index, 'arguments');
                         }}/>
 
                     </td>
                     <td>
                         <ButtonGroup>
-                            <Button bsStyle="success" bsSize="small" onClick={this.addNewRow.bind(null, index)}><Glyphicon glyph="plus"/></Button>
-                            <Button bsStyle="danger" bsSize="small" onClick={this.removeRow.bind(null, index)}><Glyphicon glyph="trash"/>
+                            <Button bsStyle="success" bsSize="small" onClick={this.addStateElement.bind(null, 'rows', index)}><Glyphicon glyph="plus"/></Button>
+                            <Button bsStyle="danger" bsSize="small" onClick={this.removeStateElement.bind(null, 'rows', index)}><Glyphicon glyph="trash"/>
                             </Button>
                         </ButtonGroup>
                     </td>
@@ -236,7 +281,7 @@ class ModalContent extends React.Component {
                 </Col>
                 <Col xs={12}>
                     <Accordion>
-                        <Panel header="Start options" >
+                        <Panel header="Start options">
                             <Row>
                                 <Col xs={12}>
                                     <Form inline>
@@ -254,6 +299,110 @@ class ModalContent extends React.Component {
         );
         return (content);
     }
+
+    //*********************VAGRANT ******************************************
+    //***************************************************************
+
+    createVagrantForm() {
+
+        var networkNodes = this.state.networkRows.map((item, index) => {
+
+            return (
+                <tr key={index}>
+                    <td><Autocomplete inputProps={{
+                    size: '10'
+                }} menuStyle={styles.menu} value={this.state.networkRows[index].instruction} items={vagrantConfig[this.state.NetworkType]} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} onChange={(event) => {
+                    this.updateStateElement('networkRows', event.target.value, index, 'instruction');
+                }} onSelect={(value) => {
+                    this.updateStateElement('networkRows', value, index, 'instruction');
+                }} renderItem={(item, isHighlighted) => (
+                    <div style={isHighlighted
+                        ? styles.highlightedItem
+                        : styles.item} key={item.name}>{item.name}
+                    </div>
+                )}/></td>
+                    <td>
+                        <FormControl value={this.state.networkRows[index].arguments} style={{
+                            padding: '1px'
+                        }} componentClass="textarea" onChange={(event) => {
+                            this.updateStateElement('networkRows', event.target.value, index, 'arguments');
+                        }}/>
+
+                    </td>
+                    <td>
+                        <ButtonGroup>
+                            <Button bsStyle="success" bsSize="small" onClick={this.addStateElement.bind(null, 'networkRows', index)}><Glyphicon glyph="plus"/></Button>
+                            <Button bsStyle="danger" bsSize="small" onClick={this.removeStateElement.bind(null, 'networkRows', index)}><Glyphicon glyph="trash"/>
+                            </Button>
+                        </ButtonGroup>
+                    </td>
+                </tr>
+            );
+        });
+
+        return (
+            <Row>
+                <Col xs={6}>
+                    <Form inline>
+                        <ControlLabel>Box name
+                            <a href="https://atlas.hashicorp.com/boxes/search?provider=virtualbox" target="_blank">#</a>
+                        </ControlLabel>
+                        {' '}
+                        <FormControl type="text" placeholder="Box name" size="10"/></Form>
+                    <Accordion >
+                        <Panel eventKey="2" header="Network options">
+                            <Row>
+                                <Col xs={4}>
+                                    <FormGroup>
+                                        <ControlLabel>Network type</ControlLabel>
+                                        <FormControl componentClass="select" placeholder="select" onChange={(event) => {
+                                            this.setState({NetworkType: event.target.value})
+                                        }}>
+                                            <option value="">Select
+                                            </option>
+
+                                            <option value="forwarded_port">Forwarded Port
+                                            </option>
+                                            <option value="private_network">Private Network</option>
+                                            <option value="public_network">Public Network</option>
+                                        </FormControl>
+                                    </FormGroup>
+                                </Col>
+                                <Col xs={8}>
+                                    <Table striped bordered condensed hover>
+                                        <thead>
+                                            <tr>
+                                                <th>INSTRUCTION</th>
+                                                <th>arguments</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {networkNodes}
+                                        </tbody>
+                                    </Table>
+                                </Col>
+                            </Row>
+                        </Panel>
+                    </Accordion>
+                    <Accordion >
+                        <Panel eventKey="3" header="Provisions options">
+                            <Row>
+                                <Col xs={12}></Col>
+                            </Row>
+                        </Panel>
+                    </Accordion>
+                </Col>
+                <Col xs={6}>
+                    <h1>Vagtrant file</h1>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                </Col>
+            </Row>
+        )
+    }
+
+    //***************************************************************
+    //*********************VAGRANT END******************************************
 
     saveAndBuild = () => {
 
