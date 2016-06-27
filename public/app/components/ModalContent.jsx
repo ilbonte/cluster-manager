@@ -4,6 +4,7 @@ import Accordion from 'react-bootstrap/lib/Accordion';
 import Autocomplete from 'react-autocomplete';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
+import Checkbox from 'react-bootstrap/lib/Checkbox';
 import Col from 'react-bootstrap/lib/Col';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import Form from 'react-bootstrap/lib/Form';
@@ -122,7 +123,7 @@ const styles = {
         zIndex: '1'
     }
 };
-class ModalContent extends React.Component {
+export default class ModalContent extends React.Component {
     constructor(props) {
         super(props);
         console.log(this.props.itemData);
@@ -209,9 +210,9 @@ class ModalContent extends React.Component {
         this.setState({[field]: event.target.value});
 
     }
-    printDockerfile = () => {
+    printDockerfile = (configs) => {
         let dockerString = '';
-        this.state.rows.forEach((item) => {
+        configs.forEach((item) => {
             dockerString += item.instruction + ' ' + item.arguments + ' \n';
         });
         return dockerString;
@@ -277,8 +278,8 @@ class ModalContent extends React.Component {
                 <Col xs={6}>
                     <FormControl disabled="disabled" rows={this.state.rows.length * 2} style={{
                         padding: '1px'
-                    }} componentClass="textarea" value={this.printDockerfile()}/>
-                    <ErrorsBox dockerfile={this.printDockerfile()}/>
+                    }} componentClass="textarea" value={this.printDockerfile(this.state.rows)}/>
+                    <ErrorsBox dockerfile={this.printDockerfile(this.state.rows)}/>
                 </Col>
                 <Col xs={12}>
                     <Accordion>
@@ -300,9 +301,6 @@ class ModalContent extends React.Component {
         );
         return (content);
     }
-
-    //*********************VAGRANT ******************************************
-    //***************************************************************
 
     createVagrantForm() {
 
@@ -341,11 +339,100 @@ class ModalContent extends React.Component {
             );
         });
         let eBox = undefined;
+        let sidePanel = undefined;
         let savedDockerfile = undefined;
-        if (this.state.provisioning === 'docker') {
-            eBox = <ErrorsBox dockerfile={this.state.script}/>
-            savedDockerfile = <Saved/>
+        let dropzone = undefined;
+        let fullDropzone = (
+            <div style={{
+                border: '1px dashed lightgray'
+            }}>
+                <Dropzone onDrop={this.onDrop} style={{
+                    width: '100%',
+                    height: '100px'
+                }}>
+                    <div>Click to select or drop file here</div>
+                </Dropzone>
+            </div>
+        );
+
+        let txtarea = (<FormControl style={{
+            padding: '1px',
+            height: '200px'
+        }} componentClass="textarea" value={this.state.script} onChange={(event) => {
+            this.setState({script: event.target.value});
+        }}/>);
+        let txtareaWithError = (
+            <div><FormControl style={{
+                padding: '1px',
+                height: '200px'
+            }} componentClass="textarea" value={this.state.script} onChange={(event) => {
+                this.setState({script: event.target.value});
+            }}/>{eBox}
+                <ControlLabel>args
+                </ControlLabel>
+                <FormControl type="text" placeholder='"-t foo:1.0.0"' size="10"/>
+                <h6><a href="https://www.vagrantup.com/docs/provisioning/docker.html#build_image" target="_blank">Documentation</a></h6>
+            </div>
+        );
+
+        switch (this.state.provisioning) {
+            case 'docker':
+                {
+                    dropzone = fullDropzone;
+                    eBox = <ErrorsBox dockerfile={this.state.script}/>
+                    let optionNodes = this.props.data.map((item, index) => <option value={index} key={index}>{item.name + ':' + item.tag}</option>);
+                    savedDockerfile = <FormGroup>
+                        <ControlLabel>Select from saved</ControlLabel>
+                        <FormControl componentClass="select" placeholder="select" onChange={(event) => {
+                            console.log(this.props.data);
+                            this.setState({
+                                script: this.printDockerfile(this.props.data[event.target.value].config.build)
+                            });
+                        }}>
+                            <option value="">Select
+                            </option>
+                            {optionNodes}
+
+                        </FormControl>
+                    </FormGroup>
+                    sidePanel = (txtareaWithError);
+                    break;
+                }
+            case 'docker_run':
+                {
+                    sidePanel = (
+                        <Form>
+                            <ControlLabel>Image name
+                            </ControlLabel>
+                            <FormControl type="text" placeholder="ubuntu:latest" size="10"/>
+
+                            <ControlLabel>CMD</ControlLabel>
+                            <FormControl type="text" placeholder="bash -l" size="10"/>
+
+                            <ControlLabel>args
+                            </ControlLabel>
+                            <FormControl type="text" placeholder="-P" size="10"/>
+
+                            <ControlLabel>restart
+                            </ControlLabel>
+                            <FormControl type="text" value="always" size="10"/>
+
+                            <Checkbox>auto_assign_name</Checkbox>
+                            <Checkbox>daemonize</Checkbox>
+                            <h6><a href="https://www.vagrantup.com/docs/provisioning/docker.html#image" target="_blank">Documentation</a></h6>
+                        </Form>
+                    );
+                    break;
+                }
+            case 'shell':
+                {
+                    sidePanel = txtarea;
+                    dropzone = fullDropzone;
+                    break;
+                }
+
         }
+
         return (
             <Row>
                 <Col xs={6}>
@@ -403,33 +490,18 @@ class ModalContent extends React.Component {
                                             <option value="">Select
                                             </option>
 
-                                            <option value="docker">Docker
-                                            </option>
-                                            <option value="shell">Shell</option>
+                                            <option value="docker">Docker build</option>
+                                            <option value="docker_run">Docker run</option>
+                                            <option value="shell">Shell Script</option>
 
                                         </FormControl>
-                                        <div style={{
-                                            border: '1px dashed lightgray'
-                                        }}>
-                                            <Dropzone onDrop={this.onDrop} style={{
-                                                width: '100%',
-                                                height: '100px'
-                                            }}>
-                                                <div>Click to select or drop file here</div>
-                                            </Dropzone>
-                                            {savedDockerfile}
-                                        </div>
+                                        {dropzone}
+                                        {savedDockerfile}
                                     </FormGroup>
                                 </Col>
                                 <Col xs={8}>
-                                    <ControlLabel>Script</ControlLabel>
-
-                                    <FormControl style={{
-                                        padding: '1px',
-                                        height:'200px'
-                                    }} componentClass="textarea" value={this.state.script} onChange={(event) => {
-                                        this.setState({script: event.target.value})
-                                    }}/> {eBox}
+                                    <ControlLabel>Configuration</ControlLabel>
+                                    {sidePanel}
                                 </Col>
                             </Row>
                         </Panel>
@@ -440,31 +512,25 @@ class ModalContent extends React.Component {
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                 </Col>
             </Row>
-        )
+        );
     }
 
-    onDrop = (file) =>{
-
-      xhr({
-          method: 'get',
-          uri: file.preview
-      }, (err, resp, body) => {
-        console.log(body);
-          if (resp.statusCode === 200) {
-              // this.setState({data: JSON.parse(body)});
-              this.setState({script:body})
-          } else {
-              console.log('Errorupdatingimage');
-              console.log(err);
-          }
-      });
-
+    onDrop = (file) => {
+        xhr({
+            method: 'get',
+            uri: file.preview
+        }, (err, resp, body) => {
+            console.log(body);
+            if (resp.statusCode === 200) {
+                this.setState({script: body})
+            } else {
+                console.log('Errorupdatingimage');
+                console.log(err);
+            }
+        });
     }
-    //***************************************************************
-    //*********************VAGRANT END******************************************
 
     saveAndBuild = () => {
-
         const {name, tag, hostIP, hostPort, containerPort} = this.state
         let body = {
             status: 'building',
@@ -513,7 +579,6 @@ class ModalContent extends React.Component {
             //new image
             this.sendImage(body);
         }
-
     }
 
     sendImage = (json) => {
@@ -535,9 +600,6 @@ class ModalContent extends React.Component {
         })
     }
 }
-
-//--------------------------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------------------------
 
 class ErrorsBox extends React.Component {
     constructor(props) {
@@ -580,16 +642,3 @@ class ErrorsBox extends React.Component {
         }
     }
 }
-
-class Saved extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-      console.log(this.state);
-      return (<Button bsSize="small" onClick={this.saveAndBuild} bsStyle='success'>Choose from platform</Button>);
-
-    }
-}
-
-export default ModalContent;

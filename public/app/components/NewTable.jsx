@@ -11,7 +11,7 @@ import Row from 'react-bootstrap/lib/Row';
 /////////////////////////////////////////////////
 import ModalContent from './ModalContent';
 import ActionsButtons from './ActionsButtons';
-///////////////////////////////////////////////
+/////////////////////////////////////////////
 import Inspector from 'react-inspector';
 import io from 'socket.io-client/socket.io';
 import {baseUrl} from '../lib';
@@ -76,7 +76,7 @@ class NewTable extends React.Component {
         let rowNodes = this.state.data.map((item) => {
             return (<TableRow data={item} key={item.uid} getData={this.getData} open={this.open}/>);
         });
-        // console.log(rowNodes);
+
         let headerContent = null;
         if (title.toLowerCase() === 'images') {
             headerContent = <Row>
@@ -97,7 +97,7 @@ class NewTable extends React.Component {
                         <Modal.Header closeButton>
                             <Modal.Title>Configure your image</Modal.Title>
                         </Modal.Header>
-                        <ModalContent type={this.state.selectedType} onHide={this.close} getData={this.getData} itemData={this.state.itemData}/>
+                        <ModalContent type={this.state.selectedType} onHide={this.close} getData={this.getData} itemData={this.state.itemData} data={this.state.data.filter(item => item.type==='docker' && (item.status==='saved+builded'||item.status==='saved'))}/>
                     </Modal>
                 </Col>
             </Row>
@@ -128,10 +128,10 @@ class NewTable extends React.Component {
         xhr({
             uri: baseUrl + this.props.getUrl
         }, (err, resp, body) => {
-            // check resp.statusCode
+
             if (resp.statusCode === 200) {
                 this.setState({data: JSON.parse(body)});
-                // console.log(resp);
+
 
             } else {
                 console.log('Error getting data');
@@ -159,8 +159,7 @@ class NewTable extends React.Component {
 
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------------------------
+
 
 class TableHeader extends React.Component {
     render() {
