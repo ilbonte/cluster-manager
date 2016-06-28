@@ -310,7 +310,7 @@ export default class ModalContent extends React.Component {
                 <tr key={index}>
                     <td><Autocomplete inputProps={{
                     size: '10'
-                }} menuStyle={styles.menu} value={this.state.networkRows[index].instruction} items={vagrantConfig[this.state.NetworkType]} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} onChange={(event) => {
+                }} menuStyle={styles.menu} value={this.state.networkRows[index].instruction} items={vagrantConfig[this.state.networkType]} getItemValue={(item) => item.name} shouldItemRender={matchStateToTerm} onChange={(event) => {
                     this.updateStateElement('networkRows', event.target.value, index, 'instruction');
                 }} onSelect={(value) => {
                     this.updateStateElement('networkRows', value, index, 'instruction');
@@ -355,25 +355,8 @@ export default class ModalContent extends React.Component {
             </div>
         );
 
-        let txtarea = (<FormControl style={{
-            padding: '1px',
-            height: '200px'
-        }} componentClass="textarea" value={this.state.script} onChange={(event) => {
-            this.setState({script: event.target.value});
-        }}/>);
-        let txtareaWithError = (
-            <div><FormControl style={{
-                padding: '1px',
-                height: '200px'
-            }} componentClass="textarea" value={this.state.script} onChange={(event) => {
-                this.setState({script: event.target.value});
-            }}/>{eBox}
-                <ControlLabel>args
-                </ControlLabel>
-                <FormControl type="text" placeholder='"-t foo:1.0.0"' size="10"/>
-                <h6><a href="https://www.vagrantup.com/docs/provisioning/docker.html#build_image" target="_blank">Documentation</a></h6>
-            </div>
-        );
+        let txtarea = undefined;
+        let txtareaValidation = undefined;
 
         switch (this.state.provisioning) {
             case 'docker':
@@ -395,7 +378,21 @@ export default class ModalContent extends React.Component {
 
                         </FormControl>
                     </FormGroup>
-                    sidePanel = (txtareaWithError);
+                    sidePanel = (
+                        <div><FormControl style={{
+                            padding: '1px',
+                            height: '200px'
+                        }} componentClass="textarea" value={this.state.script} onChange={(event) => {
+                            this.setState({script: event.target.value});
+                        }}/>{eBox}
+                            <ControlLabel>args
+                            </ControlLabel>
+                            <FormControl type="text" placeholder='-t "foo:1.0.0"' size="10"/>
+                            <h6>
+                                <a href="https://www.vagrantup.com/docs/provisioning/docker.html#build_image" target="_blank">Documentation</a>
+                            </h6>
+                        </div>
+                    );
                     break;
                 }
             case 'docker_run':
@@ -404,29 +401,48 @@ export default class ModalContent extends React.Component {
                         <Form>
                             <ControlLabel>Image name
                             </ControlLabel>
-                            <FormControl type="text" placeholder="ubuntu:latest" size="10"/>
+                            <FormControl type="text" placeholder="ubuntu:latest" size="10" onChange={(event) => {
+                                this.setState({dockerRunName: event.target.value})
+                            }}/>
 
                             <ControlLabel>CMD</ControlLabel>
-                            <FormControl type="text" placeholder="bash -l" size="10"/>
+                            <FormControl type="text" placeholder="bash -l" size="10" onChange={(event) => {
+                                this.setState({dockerRunCmd: event.target.value})
+                            }}/>
 
                             <ControlLabel>args
                             </ControlLabel>
-                            <FormControl type="text" placeholder="-P" size="10"/>
+                            <FormControl type="text" placeholder="-P" size="10" onChange={(event) => {
+                                this.setState({dockerRunArgs: event.target.value})
+                            }}/>
 
                             <ControlLabel>restart
                             </ControlLabel>
-                            <FormControl type="text" value="always" size="10"/>
+                            <FormControl type="text" value="always" size="10" onChange={(event) => {
+                                this.setState({dockerRunRestart: event.target.value})
+                            }}/>
 
-                            <Checkbox>auto_assign_name</Checkbox>
-                            <Checkbox>daemonize</Checkbox>
-                            <h6><a href="https://www.vagrantup.com/docs/provisioning/docker.html#image" target="_blank">Documentation</a></h6>
+                            <Checkbox onChange={(event) => {
+                                this.setState({dockerRunAssign: event.target.value})
+                            }}>auto_assign_name</Checkbox>
+                            <Checkbox onChange={(event) => {
+                                this.setState({dockerRunDemonize: event.target.value})
+                            }}>daemonize</Checkbox>
+                            <h6>
+                                <a href="https://www.vagrantup.com/docs/provisioning/docker.html#image" target="_blank">Documentation</a>
+                            </h6>
                         </Form>
                     );
                     break;
                 }
             case 'shell':
                 {
-                    sidePanel = txtarea;
+                    sidePanel = <FormControl style={{
+                        padding: '1px',
+                        height: '200px'
+                    }} componentClass="textarea" value={this.state.script} onChange={(event) => {
+                        this.setState({script: event.target.value});
+                    }}/>;
                     dropzone = fullDropzone;
                     break;
                 }
@@ -438,10 +454,14 @@ export default class ModalContent extends React.Component {
                 <Col xs={6}>
                     <Form inline>
                         <ControlLabel>Box name
-                            <a href="https://atlas.hashicorp.com/boxes/search?provider=virtualbox" target="_blank">#</a>
+
                         </ControlLabel>
                         {' '}
-                        <FormControl type="text" placeholder="Box name" size="10"/></Form>
+                        <FormControl type="text" placeholder="Box name" size="10" onChange={(event) => {
+                            this.setState({boxName: event.target.value})
+                        }}/> {'   '}
+                        <a href="https://atlas.hashicorp.com/boxes/search?provider=virtualbox" target="_blank">search</a>
+                    </Form>
                     <Accordion >
                         <Panel eventKey="2" header="Network options">
                             <Row>
@@ -449,7 +469,7 @@ export default class ModalContent extends React.Component {
                                     <FormGroup>
                                         <ControlLabel>Network type</ControlLabel>
                                         <FormControl componentClass="select" placeholder="select" onChange={(event) => {
-                                            this.setState({NetworkType: event.target.value})
+                                            this.setState({networkType: event.target.value})
                                         }}>
                                             <option value="">Select
                                             </option>
@@ -508,11 +528,100 @@ export default class ModalContent extends React.Component {
                     </Accordion>
                 </Col>
                 <Col xs={6}>
-                    <h1>Vagtrant file</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <pre>{this.stateToConfig()}</pre>
                 </Col>
             </Row>
         );
+    }
+
+    stateToConfig = () => {
+      const {boxName,networkType,networkRows,provisioning}=this.state;
+      let obj={
+        config:{
+          vm:{
+            box:boxName
+          }
+        }
+      }
+      if(networkType){
+        obj.config.network[networkType];
+        let detailObj;
+        networkRows.forEach(item => {
+          detailObj[item.instruction]=item.arguments
+        });
+        obj.config.detail=detailObj;
+      }
+      if(provisioning){
+        switch (provisioning) {
+          case 'docker':
+
+            break;
+          case 'docker_run':
+
+            break;
+          case 'shell':
+
+            break;
+
+
+        }
+      }
+              /*{
+            "config": {
+                "vm": {
+                    "box": "ubuntu/trusty64"
+                },
+                "network": {
+                    "type": "public_network",
+                    "detail": {
+                        "guest": 83,
+                        "host": 85
+                    }
+                },
+                "providers": {
+                    "virtualbox": {
+                        "memory": 384
+                    },
+                    "lxc": {
+                        "container_name": "'test'"
+                    }
+                },
+                "provisioners": [
+                    {
+                        "type": "shell",
+                        "name": "shell1",
+                        "config": {
+                            "path": "'./provision.shell.sh'"
+                        }
+                    }, {
+                        "type": "ansible",
+                        "name": "ansible1",
+                        "config": {
+                            "playbook": "'playbook.yml'"
+                        }
+                    }, {
+                        "type": "docker",
+                        "name": "docker1",
+                        "config": {
+                            "pull_images": "'ubuntu'"
+                        }
+                    }, {
+                        "type": "docker",
+                        "name": "docker2",
+                        "config": {
+                            "commands": ["pull_images 'ubuntu'", "pull_images 'ubuntu'", "run 'rabbitmq'", "run \"ubuntu\", cmd: \"bash -l\", args: \"-v '/vagrant:/var/www'\"", "run \"db-1\", image: \"user/mysql\""]
+                        }
+                    }, {
+                        "type": "file",
+                        "name": "file1",
+                        "config": {
+                            "source": "'./Vagrantfile'",
+                            "destination": "'~/OutputVagrantfile'"
+                        }
+                    }
+                ]
+            }
+        }*/
     }
 
     onDrop = (file) => {
@@ -531,20 +640,26 @@ export default class ModalContent extends React.Component {
     }
 
     saveAndBuild = () => {
-        const {name, tag, hostIP, hostPort, containerPort} = this.state
-        let body = {
-            status: 'building',
-            type: this.props.type,
-            name,
-            tag,
-            config: {
-                build: this.state.rows,
-                run: {
-                    hostIP,
-                    hostPort,
-                    containerPort
+        let body = {};
+        if (this.props.type === 'docker') {
+            var {name, tag, hostIP, hostPort, containerPort} = this.state //TODO: hostIP ecc non serbo più?!
+            body = {
+                status: 'building',
+                type: this.props.type,
+                name,
+                tag,
+                config: {
+                    build: this.state.rows,
+                    run: {
+                        hostIP,
+                        hostPort,
+                        containerPort
+                    }
                 }
             }
+        } else if (this.props.type === 'vagrant') {
+            console.log('vagrant!');
+            console.log(this.state);
         }
 
         this.props.onHide();
