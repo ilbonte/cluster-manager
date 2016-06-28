@@ -140,7 +140,7 @@ class RunButton extends React.Component {
         xhr({
             json: {
                 name: this.state.name,
-                hostIP: this.state.hostIP,
+                hostIp: this.state.hostIP,
                 hostPort: this.state.hostPort,
                 containerPort: this.state.containerPort,
                 protocol: this.state.protocol
@@ -176,7 +176,7 @@ class RunButton extends React.Component {
         } > <Modal.Header closeButton>
             <Modal.Title>Modal heading</Modal.Title>
         </Modal.Header> < Modal.Body > <Form inline>
-            <ControlLabel>Name your instance</ControlLabel>
+            <ControlLabel>Container name</ControlLabel>
             {' '}
             <FormControl type="text" placeholder="name" size="8" onChange={this.handleFieldChange.bind(this, 'name')}/></Form> < Form inline > <ControlLabel>PortBindings:</ControlLabel>
             {' '} < FormControl type = "text" placeholder = "Host IP Address" size = "8" onChange = {
