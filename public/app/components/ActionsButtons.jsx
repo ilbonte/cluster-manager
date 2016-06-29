@@ -40,8 +40,11 @@ export default class ActionsButtons extends React.Component {
                 break;
             case 'builded':
                 //builded=|delete
-                if (this.props.data.RepoTags.length === 1) {
+                if(this.props.data.RepoTags){
+                  if (this.props.data.RepoTags.length === 1) {
                     buttons.push(deleteButton);
+                  }
+
                 }
                 break;
             case 'failed':

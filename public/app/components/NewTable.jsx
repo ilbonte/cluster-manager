@@ -130,6 +130,7 @@ class NewTable extends React.Component {
         }, (err, resp, body) => {
 
             if (resp.statusCode === 200) {
+              console.log(JSON.parse(body));
                 this.setState({data: JSON.parse(body)});
 
 
@@ -184,7 +185,7 @@ class TableRow extends React.Component {
         let {type, name, status, uid, log} = this.props.data;
         let build = '';
         let buildLog = '';
-        let inspection;
+        let inspection={};
 
         if (type === 'docker') {
             if (name) {
