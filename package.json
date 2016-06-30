@@ -11,6 +11,7 @@
     "dockerode": "^2.2.10",
     "express": "^4.13.4",
     "lodash": "^4.11.1",
+    "ncp": "^2.0.0",
     "node-vagrant": "^1.0.8",
     "require-directory": "^2.1.1",
     "rimraf": "^2.5.2",
