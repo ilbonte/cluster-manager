@@ -74,7 +74,7 @@ class NewTable extends React.Component {
     render() {
         const {title} = this.props;
         let rowNodes = this.state.data.map((item) => {
-            return (<TableRow data={item} key={item.uid} getData={this.getData} open={this.open}/>);
+            return (<TableRow title={this.props.title} data={item} key={item.uid} getData={this.getData} open={this.open}/>);
         });
 
         let headerContent = null;
@@ -186,38 +186,44 @@ class TableRow extends React.Component {
         let build = '';
         let buildLog = '';
         let inspection={};
+        if(this.props.title==='Images'){
+          if (type === 'docker') {
+              if (name) {
 
-        if (type === 'docker') {
-            if (name) {
+                  name += ':' + this.props.data.tag;
+                  inspection = this.props.data.inspect || {};
+                  console.log('error heeeeeeeeere');
+                  console.log(this.props.data);
+                  this.props.data.config.build.forEach(step => {
+                      build += step.instruction + ' ' + step.arguments + '\n';
+                  });
+                  console.log('nope');
 
-                name += ':' + this.props.data.tag;
-                inspection = this.props.data.inspect || {};
+                  if (log) {
 
-                this.props.data.config.build.forEach(step => {
-                    build += step.instruction + ' ' + step.arguments + '\n';
-                });
-                if (log) {
+                      if (_.isString(log)) {
+                          //streaming
+                          buildLog += log;
+                      } else {
+                          // /if reading from db
+                          log.forEach(step => {
+                              buildLog += JSON.stringify(step, null, 2) + '\n';
+                          })
 
-                    if (_.isString(log)) {
-                        //streaming
-                        buildLog += log;
-                    } else {
-                        // /if reading from db
-                        log.forEach(step => {
-                            buildLog += JSON.stringify(step, null, 2) + '\n';
-                        })
-
-                    }
-                }
-            } else {
-                //only online
-                inspection = this.props.data;
-                name = '';
-                this.props.data.RepoTags.forEach(imageName => {
-                    name += imageName + ' || '
-                });
-            }
+                      }
+                  }
+              } else {
+                  //only online
+                  inspection = this.props.data;
+                  name = '';
+                  this.props.data.RepoTags.forEach(imageName => {
+                      name += imageName + ' || '
+                  });
+              }
+          }
         }
+
+
         return (
             <div>
                 <Row style={headerStyle} onClick={(event) => {
@@ -262,7 +268,7 @@ class Scroller extends React.Component {
         // console.log(DOMNode.scrollTop);
     }
     render() {
-        return <pre style={{maxHeight:'100px'}}>{this.props.children}</pre>
+        return <pre style={{maxHeight:'300px'}}>{this.props.children}</pre>
     }
 }
 
