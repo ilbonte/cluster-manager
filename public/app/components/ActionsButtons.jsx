@@ -16,7 +16,7 @@ export default class ActionsButtons extends React.Component {
     let {type, name, status} = this.props.data;
     let buttons = [];
 
-    let deleteButton = <DeleteButton key={100} data={this.props.data} getData={this.props.getData}/>;
+    let deleteButton = <DeleteButton title={this.props.title} key={100} data={this.props.data} getData={this.props.getData}/>;
     let editButton = <Button key={200} bsSize={actionButtonSize} onClick={this.edit}><Glyphicon
       glyph="wrench"/></Button>;
     let duplicateButton = <DuplicateButton key={300} data={this.props.data} open={this.props.open}/>
@@ -36,7 +36,14 @@ export default class ActionsButtons extends React.Component {
         buttons.push(duplicateButton);
         buttons.push(editButton);
         buttons.push(deleteButton);
-
+        break;
+        case 'saved+running':
+        //stop|delete
+        buttons.push(deleteButton);
+        break;
+      case 'saved+exited':
+        //start??|delete
+        buttons.push(deleteButton);
         break;
       case 'builded':
         //builded=|delete
@@ -74,13 +81,14 @@ class DeleteButton extends React.Component {
       border: '1px solid black'
     };
     return (
-      <Button bsStyle="danger" bsSize={actionButtonSize}><Glyphicon glyph="trash" onClick={this.sendDelete}/></Button>
+      <Button bsStyle="danger" bsSize={actionButtonSize}><Glyphicon glyph="trash" onClick={this.sendDelete.bind(this, this.props.title)}/></Button>
     );
   }
 
-  sendDelete = (event) => {
+  sendDelete = (title) => {
     let json = {};
     if (this.props.data.RepoTags) {
+      //if only builded
       if (this.props.data.RepoTags.length === 1) {
         json.name = this.props.data.RepoTags[0];
       }
@@ -88,7 +96,7 @@ class DeleteButton extends React.Component {
     xhr({
       json,
       method: 'DELETE',
-      uri: baseUrl + '/v1/images/' + this.props.data.uid
+      uri: baseUrl + '/v1/'+title.toLowerCase()+'/' + this.props.data.uid
 
     }, (err, resp, body) => {
       this.props.getData();
@@ -97,7 +105,7 @@ class DeleteButton extends React.Component {
         // this.setState({data: JSON.parse(body)});
 
       } else {
-        console.log('Error posting new image');
+        console.log('Error deleting');
         console.log(err);
       }
     })

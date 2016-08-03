@@ -131,6 +131,9 @@ class NewTable extends React.Component {
 
   generateTableRows() {
     return this.state.data.map((item) => {
+      // if(this.props.title==='Instances')
+      console.log('e^^^^^')
+        console.log(item);
       return (<TableRow title={this.props.title} data={item} key={item.uid} getData={this.getData} open={this.open}/>);
     });
   }
@@ -221,7 +224,7 @@ class TableRow extends React.Component {
           <TableCell>{name}</TableCell>
           <TableCell>{status}</TableCell>
           <TableCell id='ignoreExpansion' onClick={() => this.setState({open: false})}>
-            <ActionsButtons data={this.props.data} getData={this.props.getData} open={this.props.open}/>
+            <ActionsButtons title={this.props.title} data={this.props.data} getData={this.props.getData} open={this.props.open}/>
           </TableCell>
         </Row>
         <Row>
