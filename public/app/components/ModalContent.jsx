@@ -159,7 +159,8 @@ export default class ModalContent extends React.Component {
           {this.createForm()}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.saveAndBuild} bsStyle='success'>Save and Build</Button>
+          <Button onClick={this.saveAndBuild} bsStyle='success' disabled={this.isDisabled()}>Save and
+            Build</Button>
           <Button onClick={this.props.onHide} bsStyle='danger'>Close</Button>
         </Modal.Footer>
       </div>
@@ -218,6 +219,13 @@ export default class ModalContent extends React.Component {
     return dockerString;
   };
 
+  getValidationState(field) {
+    if (this.state[field]) {
+      if (this.state[field].length > 0) return 'success';
+    }
+    return 'error'
+  }
+
   createDockerForm() {
     var rowNodes = this.generateDockerTableRows();
 
@@ -250,14 +258,19 @@ export default class ModalContent extends React.Component {
               <Row>
                 <Col xs={12}>
                   <Form inline>
-                    <ControlLabel>Tag Image:</ControlLabel>
-                    {' '}
-                    <FormControl type="text" placeholder="name" size="8"
-                                 onChange={this.handleFieldChange.bind(this, 'name')}/>
-                    <FormControl type="text"
-                                 placeholder="tag"
-                                 size="8"
-                                 onChange={this.handleFieldChange.bind(this, 'tag')}/>
+                    <FormGroup validationState={this.getValidationState('name')}>
+                      <ControlLabel>Tag Image:</ControlLabel>
+                      {' '}
+                      <FormControl type="text" placeholder="name" size="8"
+                                   onChange={this.handleFieldChange.bind(this, 'name')}
+                      />
+                    </FormGroup>
+                    <FormGroup validationState={this.getValidationState('tag')}>
+                      < FormControl type="text"
+                                    placeholder="tag"
+                                    size="8"
+                                    onChange={this.handleFieldChange.bind(this, 'tag')}/>
+                    </FormGroup>
                   </Form>
                 </Col>
 
@@ -379,7 +392,7 @@ export default class ModalContent extends React.Component {
         errorBox = <ErrorsBox dockerfile={this.state.script}/>;
         let optionNodes = this.props.data.map((item, index) => <option value={index}
                                                                        key={index}>{item.name + ':' + item.tag}
-                                                                       </option>);
+        </option>);
         savedDockerfile = <FormGroup>
           <ControlLabel>Select from saved</ControlLabel>
           <FormControl componentClass="select" placeholder="select" onChange={(event) => {
@@ -656,19 +669,14 @@ export default class ModalContent extends React.Component {
   saveAndBuild = () => {
     let body = {};
     if (this.props.type === 'docker') {
-      var {name, tag, hostIP, hostPort, containerPort} = this.state //TODO: hostIP ecc non serbo più?!
+      var {name, tag} = this.state;
       body = {
         status: 'building',
         type: this.props.type,
         name,
         tag,
         config: {
-          build: this.state.rows,
-          run: {
-            hostIP,
-            hostPort,
-            containerPort
-          }
+          build: this.state.rows
         }
       }
     } else if (this.props.type === 'vagrant') {
@@ -732,6 +740,24 @@ export default class ModalContent extends React.Component {
         console.log(err);
       }
     })
+  };
+
+  isDisabled() {
+    if (this.props.type === 'docker') {
+      return !this.isDockerFormValid();
+    }
+
+  }
+
+  isDockerFormValid() {
+    const fields = ['name', 'tag'];
+    return fields.every(element => {
+      const value = this.state[element];
+      if(value !== undefined) {
+        return this.state[element].length > 0;
+      }
+      return false;
+    });
   }
 }
 
