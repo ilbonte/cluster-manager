@@ -16,7 +16,8 @@ export default class ActionsButtons extends React.Component {
     let {type, name, status} = this.props.data;
     let buttons = [];
 
-    let deleteButton = <DeleteButton title={this.props.title} key={100} data={this.props.data} getData={this.props.getData}/>;
+    let deleteButton = <DeleteButton title={this.props.title} key={100} data={this.props.data}
+                                     getData={this.props.getData}/>;
     let editButton = <Button key={200} bsSize={actionButtonSize} onClick={this.edit}><Glyphicon
       glyph="wrench"/></Button>;
     let duplicateButton = <DuplicateButton key={300} data={this.props.data} open={this.props.open}/>
@@ -37,7 +38,7 @@ export default class ActionsButtons extends React.Component {
         buttons.push(editButton);
         buttons.push(deleteButton);
         break;
-        case 'saved+running':
+      case 'saved+running':
         //stop|delete
         buttons.push(deleteButton);
         break;
@@ -81,7 +82,8 @@ class DeleteButton extends React.Component {
       border: '1px solid black'
     };
     return (
-      <Button bsStyle="danger" bsSize={actionButtonSize}><Glyphicon glyph="trash" onClick={this.sendDelete.bind(this, this.props.title)}/></Button>
+      <Button bsStyle="danger" bsSize={actionButtonSize}><Glyphicon glyph="trash"
+                                                                    onClick={this.sendDelete.bind(this, this.props.title)}/></Button>
     );
   }
 
@@ -96,7 +98,7 @@ class DeleteButton extends React.Component {
     xhr({
       json,
       method: 'DELETE',
-      uri: baseUrl + '/v1/'+title.toLowerCase()+'/' + this.props.data.uid
+      uri: baseUrl + '/v1/' + title.toLowerCase() + '/' + this.props.data.uid
 
     }, (err, resp, body) => {
       this.props.getData();
@@ -143,15 +145,14 @@ class RunButton extends React.Component {
 
   open = () => {
     this.setState({showModal: true});
-  }
+  };
+
   handleFieldChange = (field, event) => {
-
     this.setState({[field]: event.target.value});
+  };
 
-  }
   startInstance = () => {
     this.setState({showModal: true});
-    console.log(this.props.data.uid);
     let json = {};
     if (this.props.data.type === 'docker') {
       json = {
@@ -184,6 +185,13 @@ class RunButton extends React.Component {
         console.log(err);
       }
     })
+  };
+
+  isDisabled(){
+    if(this.state.name!==undefined){
+      return this.state.name <= 0;
+    }
+    return true;
   }
 
   render() {
@@ -208,22 +216,25 @@ class RunButton extends React.Component {
     }
 
     return (
-      < Button bsStyle="success" bsSize={actionButtonSize}> <Glyphicon glyph="send" onClick={this.open}/> < Modal show={
-        this.state.showModal
-      }
-                                                                                                                  onHide={
-                                                                                                                    this.close
-                                                                                                                  }>
-        <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
-        </Modal.Header> < Modal.Body > <Form inline>
-        <ControlLabel>Container name</ControlLabel>
-        {' '}
-        <FormControl type="text" placeholder="name" size="8"
-                     onChange={this.handleFieldChange.bind(this, 'name')}/></Form>
-        {                networkForm
-        } </Modal.Body > <Modal.Footer>
-        <Button onClick={this.startInstance}>Start</Button > <Button onClick={this.close}>Close</Button> </Modal.Footer>
-      </Modal > </Button >)
+      < Button bsStyle="success" bsSize={actionButtonSize}> <Glyphicon glyph="send" onClick={this.open}/>
+        < Modal show={
+          this.state.showModal
+        } onHide={
+          this.close
+        }>
+
+          <Modal.Body>
+            <Form inline>
+              <ControlLabel>Container name</ControlLabel>
+              {' '}
+              <FormControl type="text" placeholder="name" size="8"
+                           onChange={this.handleFieldChange.bind(this, 'name')}/></Form>
+            {                networkForm
+            }
+          </Modal.Body >
+          <Modal.Footer>
+            <Button onClick={this.startInstance} disabled={this.isDisabled()}>Start</Button > <Button onClick={this.close}>Close</Button>
+          </Modal.Footer>
+        </Modal > </Button >)
   }
 }

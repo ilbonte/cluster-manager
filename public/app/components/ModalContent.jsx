@@ -165,8 +165,7 @@ export default class ModalContent extends React.Component {
           {this.createForm()}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.saveAndBuild} bsStyle='success' disabled={this.isDisabled()}>Save and
-            Build</Button>
+          <Button onClick={this.saveAndBuild} bsStyle='success' disabled={this.isDisabled()}>Save and Build</Button>
           <Button onClick={this.props.onHide} bsStyle='danger'>Close</Button>
           <Button onClick={()=> {
           }} bsStyle='danger'>DEBUG</Button>
@@ -759,14 +758,14 @@ export default class ModalContent extends React.Component {
 
   isDisabled() {
     if (this.props.type === 'docker') {
-      return !this.isDockerFormValid(['name', 'tag']);
+      return !this.isFormValid(['name', 'tag']);
     } else {
-      return !this.isDockerFormValid(['name', 'boxName']);
+      return !this.isFormValid(['name', 'boxName']);
     }
 
   }
 
-  isDockerFormValid(fields) {
+  isFormValid(fields) {
     return fields.every(element => {
       const value = this.state[element];
       if (value !== undefined) {
