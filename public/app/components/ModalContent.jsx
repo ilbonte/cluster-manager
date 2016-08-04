@@ -332,22 +332,25 @@ export default class ModalContent extends React.Component {
 
   createVagrantForm() {
     var networkNodes = this.state.networkRows.map((item, index) => {
+      console.log('kakakaka', vagrantConfig[this.state.networkType]);
       return (
         <tr key={index}>
-          <td><Autocomplete inputProps={{
-            size: '10'
-          }} menuStyle={autocompleteStyles.menu} value={this.state.networkRows[index].instruction}
-                            items={vagrantConfig[this.state.networkType]} getItemValue={(item) => item.name}
-                            shouldItemRender={matchStateToTerm} onChange={(event) => {
-            this.updateStateElement('networkRows', event.target.value, index, 'instruction');
-          }} onSelect={(value) => {
-            this.updateStateElement('networkRows', value, index, 'instruction');
-          }} renderItem={(item, isHighlighted) => (
-            <div style={isHighlighted
-              ? autocompleteStyles.highlightedItem
-              : autocompleteStyles.item} key={item.name}>{item.name}
-            </div>
-          )}/></td>
+          <td>
+            <Autocomplete inputProps={{
+              size: '10'
+            }} menuStyle={autocompleteStyles.menu} value={this.state.networkRows[index].instruction}
+                          items={vagrantConfig[this.state.networkType] || {name: ''}} getItemValue={(item) => item.name}
+                          shouldItemRender={matchStateToTerm} onChange={(event) => {
+              this.updateStateElement('networkRows', event.target.value, index, 'instruction');
+            }} onSelect={(value) => {
+              this.updateStateElement('networkRows', value, index, 'instruction');
+            }} renderItem={(item, isHighlighted) => (
+              <div style={isHighlighted
+                ? autocompleteStyles.highlightedItem
+                : autocompleteStyles.item} key={item.name}>{item.name}
+              </div>
+            )}/>
+          </td>
           <td>
             <FormControl value={this.state.networkRows[index].arguments} style={{
               padding: '1px'
@@ -449,16 +452,19 @@ export default class ModalContent extends React.Component {
       <Row>
         <Col xs={6}>
           <Form inline>
-            <ControlLabel>Name</ControlLabel>
-            {' '}
-            <FormControl type="text" size="10" onChange={(event) => {
-              this.setState({name: event.target.value})
-            }}/>
-            <ControlLabel>Box</ControlLabel>
-            {' '}
-            <FormControl type="text" placeholder="Box name" size="10" onChange={(event) => {
-              this.setState({boxName: event.target.value})
-            }}/> {'   '}
+            <FormGroup validationState={this.getValidationState('name')}>
+              <ControlLabel>Name</ControlLabel>
+              {' '}
+              <FormControl type="text" size="10" onChange={(event) => {
+                this.setState({name: event.target.value})
+              }}/>
+            </FormGroup>
+            <FormGroup validationState={this.getValidationState('boxName')}>
+              <ControlLabel>Box</ControlLabel>
+              {' '}
+              <FormControl type="text" placeholder="Box name" size="10" onChange={(event) => {
+                this.setState({boxName: event.target.value})
+              }}/> </FormGroup>{'   '}
             <a href="https://atlas.hashicorp.com/boxes/search?provider=virtualbox" target="_blank">search</a>
           </Form>
           <Accordion >
@@ -473,7 +479,6 @@ export default class ModalContent extends React.Component {
                     }}>
                       <option value="">Select
                       </option>
-
                       <option value="forwarded_port">Forwarded Port
                       </option>
                       <option value="private_network">Private Network</option>
@@ -744,16 +749,17 @@ export default class ModalContent extends React.Component {
 
   isDisabled() {
     if (this.props.type === 'docker') {
-      return !this.isDockerFormValid();
+      return !this.isDockerFormValid(['name', 'tag']);
+    } else {
+      return !this.isDockerFormValid(['name', 'boxName']);
     }
 
   }
 
-  isDockerFormValid() {
-    const fields = ['name', 'tag'];
+  isDockerFormValid(fields) {
     return fields.every(element => {
       const value = this.state[element];
-      if(value !== undefined) {
+      if (value !== undefined) {
         return this.state[element].length > 0;
       }
       return false;
