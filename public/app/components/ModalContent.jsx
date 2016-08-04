@@ -126,9 +126,15 @@ export default class ModalContent extends React.Component {
     super(props);
     if (this.isEditing()) {
       //get the build steps
-      this.state = {
-        rows: this.props.itemData.config.build
-      };
+      if (this.props.type === 'docker') {
+        this.state = {
+          rows: this.props.itemData.config.build,
+          tag: this.props.itemData.tag,
+          name: this.props.itemData.name
+        }
+      } else {
+        this.state = this.props.itemData.oldState;
+      }
     } else {
       //empty/new image creation
       this.state = {
@@ -162,16 +168,21 @@ export default class ModalContent extends React.Component {
           <Button onClick={this.saveAndBuild} bsStyle='success' disabled={this.isDisabled()}>Save and
             Build</Button>
           <Button onClick={this.props.onHide} bsStyle='danger'>Close</Button>
+          <Button onClick={()=> {
+          }} bsStyle='danger'>DEBUG</Button>
         </Modal.Footer>
       </div>
     )
   }
 
   componentDidMount() {
-    this.updateStateElement('rows', 'FROM', 0, 'instruction');
+    if (this.props.type === 'docker') {
+      this.updateStateElement('rows', 'FROM', 0, 'instruction');
+    }
   }
 
   createForm() {
+    console.log(this.state);
     if (this.props.type === 'docker') {
       return this.createDockerForm();
     } else if (this.props.type === 'vagrant') {
@@ -194,11 +205,7 @@ export default class ModalContent extends React.Component {
       instruction: '',
       arguments: ''
     });
-    console.log(rows);
-
     this.setState({[elem]: rows});
-    // console.log(index);
-    // console.log(this.state[elem]);
   };
 
   updateStateElement = (elem, value, index, field) => {
@@ -262,14 +269,14 @@ export default class ModalContent extends React.Component {
                       <ControlLabel>Tag Image:</ControlLabel>
                       {' '}
                       <FormControl type="text" placeholder="name" size="8"
-                                   onChange={this.handleFieldChange.bind(this, 'name')}
+                                   onChange={this.handleFieldChange.bind(this, 'name')} value={this.state.name}
                       />
                     </FormGroup>
                     <FormGroup validationState={this.getValidationState('tag')}>
                       < FormControl type="text"
                                     placeholder="tag"
                                     size="8"
-                                    onChange={this.handleFieldChange.bind(this, 'tag')}/>
+                                    onChange={this.handleFieldChange.bind(this, 'tag')} value={this.state.tag}/>
                     </FormGroup>
                   </Form>
                 </Col>
@@ -331,8 +338,8 @@ export default class ModalContent extends React.Component {
   }
 
   createVagrantForm() {
+
     var networkNodes = this.state.networkRows.map((item, index) => {
-      console.log('kakakaka', vagrantConfig[this.state.networkType]);
       return (
         <tr key={index}>
           <td>
@@ -420,7 +427,8 @@ export default class ModalContent extends React.Component {
               this.setState({dockerArgs: event.target.value});
             }}/>
             <h6>
-              <a href="https://www.vagrantup.com/docs/provisioning/docker.html#build_image" target="_blank">Documentation</a>
+              <a href="https://www.vagrantup.com/docs/provisioning/docker.html#build_image"
+                 target="_blank">Documentation</a>
             </h6>
           </div>
         );
@@ -455,16 +463,17 @@ export default class ModalContent extends React.Component {
             <FormGroup validationState={this.getValidationState('name')}>
               <ControlLabel>Name</ControlLabel>
               {' '}
-              <FormControl type="text" size="10" onChange={(event) => {
+              <FormControl type="text" size="10" value={this.state.name} onChange={(event) => {
                 this.setState({name: event.target.value})
               }}/>
             </FormGroup>
             <FormGroup validationState={this.getValidationState('boxName')}>
               <ControlLabel>Box</ControlLabel>
               {' '}
-              <FormControl type="text" placeholder="Box name" size="10" onChange={(event) => {
-                this.setState({boxName: event.target.value})
-              }}/> </FormGroup>{'   '}
+              <FormControl type="text" placeholder="Box name" size="10" value={this.state.boxName}
+                           onChange={(event) => {
+                             this.setState({boxName: event.target.value})
+                           }}/> </FormGroup>{'   '}
             <a href="https://atlas.hashicorp.com/boxes/search?provider=virtualbox" target="_blank">search</a>
           </Form>
           <Accordion >
@@ -693,6 +702,7 @@ export default class ModalContent extends React.Component {
       body.script = this.state.script;
       body.name = this.state.name;
       body.status = 'building';
+      body.oldState=this.state;
     }
 
     this.props.onHide();

@@ -132,8 +132,6 @@ class NewTable extends React.Component {
   generateTableRows() {
     return this.state.data.map((item) => {
       // if(this.props.title==='Instances')
-      console.log('e^^^^^')
-        console.log(item);
       return (<TableRow title={this.props.title} data={item} key={item.uid} getData={this.getData} open={this.open}/>);
     });
   }
@@ -160,11 +158,12 @@ class NewTable extends React.Component {
 
   open = (itemData) => {
     if (itemData) {
+      console.log(itemData);
       this.setState({selectedType: itemData.type});
       this.setState({itemData});
     }
     this.setState({showModal: true});
-  }
+  };
   setSelectedType = (type) => {
     this.setState({selectedType: type});
     this.open();

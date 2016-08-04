@@ -117,12 +117,12 @@ class DuplicateButton extends React.Component {
   duplicate = () => {
     this.props.data._action = 'duplicate';
     this.props.open(this.props.data);
-  }
+  };
 
   render() {
     let cellStyle = {
       border: '1px solid black'
-    }
+    };
     return (
       <Button bsStyle="info" bsSize={actionButtonSize} onClick={this.duplicate}><Glyphicon glyph="duplicate"
                                                                                            key={3}/></Button>
