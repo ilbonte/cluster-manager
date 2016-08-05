@@ -11,7 +11,7 @@ import ModalContent from './ModalContent';
 import ActionsButtons from './ActionsButtons';
 import Inspector from 'react-inspector';
 import io from 'socket.io-client/socket.io';
-import {baseUrl} from '../lib';
+import {baseUrl, generateUid} from '../lib';
 /////////////////////////////////////////////////
 /////////////////////////////////////////////
 const _ = require('lodash/core');
@@ -131,8 +131,8 @@ class NewTable extends React.Component {
 
   generateTableRows() {
     return this.state.data.map((item) => {
-      // if(this.props.title==='Instances')
-      return (<TableRow title={this.props.title} data={item} key={item.uid} getData={this.getData} open={this.open}/>);
+      return (<TableRow title={this.props.title} data={item} key={item.uid || generateUid()} getData={this.getData}
+                        open={this.open}/>);
     });
   }
 
@@ -154,7 +154,7 @@ class NewTable extends React.Component {
   close = () => {
     this.setState({itemData: false});
     this.setState({showModal: false});
-  }
+  };
 
   open = (itemData) => {
     if (itemData) {
@@ -177,7 +177,8 @@ class TableHeader extends React.Component {
       background: '#ea6153',
       color: 'white',
       fontWeight: '900'
-    }
+    };
+
     return (
       <Row style={headerStyle}>{this.props.children}</Row>
     );
@@ -196,19 +197,35 @@ class TableRow extends React.Component {
     let build = '';
     let buildLog = '';
     let inspection = {};
+    let expandedRowContent;
     if (this.props.title === 'Images') {
       if (type === 'docker') {
-        const __ret=this.generateDockerRows(name, inspection, build, log, buildLog);
+        const __ret = this.generateDockerRows(name, inspection, build, log, buildLog);
         name = __ret.name;
         inspection = __ret.inspection;
         build = __ret.build;
         buildLog = __ret.buildLog;
+        expandedRowContent = (<div><Col xs={6}>
+          <h3>Build Steps</h3>
+          <pre style={{maxHeight: '300px'}}>{build}</pre>
+        </Col>
+          <Col xs={12}>
+            <h3>Build log</h3>
+            <Scroller >{buildLog}</Scroller>
+          </Col>
+          <Col xs={12}>
+            <h3>Image Inspect Details</h3>
+            <Inspector expandLevel={0} data={inspection}/>
+          </Col></div>);
       }
-    }else if(this.props.title === 'Instances'){
-      console.log('instance',this.props.data);
-      name = this.props.data.runConfig.name;
+    } else if (this.props.title === 'Instances') {
+      console.log('instance', this.props.data);
+      if (this.type === 'docker') {
+        name = this.props.data.runConfig;
+      } else {
+        name = this.props.data.name;
+      }
     }
-
 
 
     return (
@@ -223,24 +240,14 @@ class TableRow extends React.Component {
           <TableCell>{name}</TableCell>
           <TableCell>{status}</TableCell>
           <TableCell id='ignoreExpansion' onClick={() => this.setState({open: false})}>
-            <ActionsButtons title={this.props.title} data={this.props.data} getData={this.props.getData} open={this.props.open}/>
+            <ActionsButtons title={this.props.title} data={this.props.data} getData={this.props.getData}
+                            open={this.props.open}/>
           </TableCell>
         </Row>
         <Row>
           <Collapse in={this.state.open}>
             <div>
-              <Col xs={6}>
-                <h3>Build Steps</h3>
-                <pre style={{maxHeight: '300px'}}>{build}</pre>
-              </Col>
-              <Col xs={12}>
-                <h3>Build log</h3>
-                <Scroller >{buildLog}</Scroller>
-              </Col>
-              <Col xs={12}>
-                <h3>Image Inspect Details</h3>
-                <Inspector expandLevel={0} data={inspection}/>
-              </Col>
+              {expandedRowContent}
             </div>
           </Collapse>
         </Row>
