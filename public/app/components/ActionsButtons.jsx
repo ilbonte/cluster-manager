@@ -38,8 +38,20 @@ export default class ActionsButtons extends React.Component {
         buttons.push(editButton);
         buttons.push(deleteButton);
         break;
+      // case 'running':
+      //   //stop|delete
+      //   buttons.push(deleteButton);
+      //   break;
       case 'saved+running':
         //stop|delete
+        buttons.push(deleteButton);
+        break;
+      // case 'poweroff':
+      //   //start|delete
+      //   buttons.push(deleteButton);
+      //   break;
+      case 'saved+poweroff':
+        //start|delete
         buttons.push(deleteButton);
         break;
       case 'saved+exited':
@@ -187,8 +199,8 @@ class RunButton extends React.Component {
     })
   };
 
-  isDisabled(){
-    if(this.state.name!==undefined){
+  isDisabled() {
+    if (this.state.name !== undefined) {
       return this.state.name <= 0;
     }
     return true;
@@ -233,7 +245,8 @@ class RunButton extends React.Component {
             }
           </Modal.Body >
           <Modal.Footer>
-            <Button onClick={this.startInstance} disabled={this.isDisabled()}>Start</Button > <Button onClick={this.close}>Close</Button>
+            <Button onClick={this.startInstance} disabled={this.isDisabled()}>Start</Button > <Button
+            onClick={this.close}>Close</Button>
           </Modal.Footer>
         </Modal > </Button >)
   }

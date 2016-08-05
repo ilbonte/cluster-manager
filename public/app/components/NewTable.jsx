@@ -220,11 +220,9 @@ class TableRow extends React.Component {
       }
     } else if (this.props.title === 'Instances') {
       console.log('instance', this.props.data);
-      if (this.type === 'docker') {
-        name = this.props.data.runConfig;
-      } else {
-        name = this.props.data.name;
-      }
+
+        name = this.props.data.runConfig.name;
+
     }
 
 
