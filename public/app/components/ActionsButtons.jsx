@@ -196,7 +196,8 @@ class RunButton extends React.Component {
         console.log('Error posting new image');
         console.log(err);
       }
-    })
+    });
+    this.close();
   };
 
   isDisabled() {
@@ -228,8 +229,8 @@ class RunButton extends React.Component {
     }
 
     return (
-      < Button bsStyle="success" bsSize={actionButtonSize}> <Glyphicon glyph="send" onClick={this.open}/>
-        < Modal show={
+      <Button bsStyle="success" bsSize={actionButtonSize}> <Glyphicon glyph="send" onClick={this.open}/>
+        <Modal show={
           this.state.showModal
         } onHide={
           this.close
@@ -240,14 +241,15 @@ class RunButton extends React.Component {
               <ControlLabel>Container name</ControlLabel>
               {' '}
               <FormControl type="text" placeholder="name" size="8"
-                           onChange={this.handleFieldChange.bind(this, 'name')}/></Form>
-            {                networkForm
-            }
-          </Modal.Body >
+                           onChange={this.handleFieldChange.bind(this, 'name')}/>
+            </Form>
+            {networkForm}
+          </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.startInstance} disabled={this.isDisabled()}>Start</Button > <Button
-            onClick={this.close}>Close</Button>
+            <Button onClick={this.startInstance} disabled={this.isDisabled()}>Start</Button>
+            <Button onClick={this.close}>Close</Button>
           </Modal.Footer>
-        </Modal > </Button >)
+        </Modal>
+      </Button>)
   }
 }
