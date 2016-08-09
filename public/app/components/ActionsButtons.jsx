@@ -23,7 +23,8 @@ export default class ActionsButtons extends React.Component {
     let duplicateButton = <DuplicateButton key={300} data={this.props.data} open={this.props.open}/>;
     let runButton = <RunButton key={400} data={this.props.data} getData={this.props.getData}/>;
     let pauseButton = <PauseButton key={500} data={this.props.data} getData={this.props.getData}/>;
-    let startButton = <StartButton key={500} data={this.props.data} getData={this.props.getData}/>;
+    let startButton = <StartButton key={600} data={this.props.data} getData={this.props.getData}/>;
+    let poweroffButton = <PoweroffButton key={700} data={this.props.data} getData={this.props.getData}/>;
 
     switch (status) {
       case 'saved':
@@ -38,15 +39,15 @@ export default class ActionsButtons extends React.Component {
         buttons.push(duplicateButton);
         buttons.push(editButton);
         buttons.push(deleteButton);
+
         break;
-      // case 'running':
-      //   //stop|delete
-      //   buttons.push(deleteButton);
-      //   break;
       case 'saved+running':
         //stop|delete
         buttons.push(deleteButton);
         buttons.push(pauseButton);
+        if(type==='vagrant'){
+          buttons.push(poweroffButton);
+        }
 
         break;
       // case 'poweroff':
@@ -57,7 +58,10 @@ export default class ActionsButtons extends React.Component {
         //start|delete
         buttons.push(deleteButton);
         buttons.push(startButton);
-
+        break;
+      case 'saved+saved':
+        buttons.push(deleteButton);
+        buttons.push(startButton);
         break;
       case 'saved+exited':
         //start??|delete
@@ -79,7 +83,6 @@ export default class ActionsButtons extends React.Component {
         buttons.push(editButton);
         buttons.push(deleteButton);
         break;
-      default:
 
     }
 
@@ -258,7 +261,7 @@ class RunButton extends React.Component {
 
 class PauseButton extends React.Component {
   pause = () => {
-    const json={currentStatus:'running'};
+    const json={action:'pause'};
     xhr({
       json,
       method: 'put',
@@ -286,7 +289,10 @@ class PauseButton extends React.Component {
 
 class StartButton extends React.Component {
   resume = () => {
-    const json={currentStatus:'paused'};
+    const json={action:'start'};
+    if(this.props.data.status==='saved+poweroff'){
+      json.action='up';
+    }
     xhr({
       json,
       method: 'put',
@@ -307,7 +313,34 @@ class StartButton extends React.Component {
 
   render() {
     return (
-      <Button bsStyle="info" bsSize={actionButtonSize} onClick={this.resume}><Glyphicon glyph="play" key={4}/></Button>
+      <Button bsStyle="info" bsSize={actionButtonSize} onClick={this.resume}><Glyphicon glyph="play" key={5}/></Button>
+    );
+  }
+}
+class PoweroffButton extends React.Component {
+  resume = () => {
+    const json={action:'poweroff'};
+    xhr({
+      json,
+      method: 'put',
+      uri: baseUrl + '/v1/instances/' + this.props.data.uid
+
+    }, (err, resp, body) => {
+      this.props.getData();
+
+      if (resp.statusCode === 200) {
+        // this.setState({data: JSON.parse(body)});
+
+      } else {
+        console.log('Error updating instance');
+        console.log(err);
+      }
+    });
+  };
+
+  render() {
+    return (
+      <Button bsStyle="info" bsSize={actionButtonSize} onClick={this.resume}><Glyphicon glyph="off" key={6}/></Button>
     );
   }
 }
