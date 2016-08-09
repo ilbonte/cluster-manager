@@ -20,9 +20,10 @@ export default class ActionsButtons extends React.Component {
                                      getData={this.props.getData}/>;
     let editButton = <Button key={200} bsSize={actionButtonSize} onClick={this.edit}><Glyphicon
       glyph="wrench"/></Button>;
-    let duplicateButton = <DuplicateButton key={300} data={this.props.data} open={this.props.open}/>
-    let runButton = <RunButton key={400} data={this.props.data} getData={this.props.getData}><Glyphicon
-      glyph="send"/></RunButton>;
+    let duplicateButton = <DuplicateButton key={300} data={this.props.data} open={this.props.open}/>;
+    let runButton = <RunButton key={400} data={this.props.data} getData={this.props.getData}/>;
+    let pauseButton = <PauseButton key={500} data={this.props.data} getData={this.props.getData}/>;
+    let startButton = <StartButton key={500} data={this.props.data} getData={this.props.getData}/>;
 
     switch (status) {
       case 'saved':
@@ -45,6 +46,8 @@ export default class ActionsButtons extends React.Component {
       case 'saved+running':
         //stop|delete
         buttons.push(deleteButton);
+        buttons.push(pauseButton);
+
         break;
       // case 'poweroff':
       //   //start|delete
@@ -53,10 +56,13 @@ export default class ActionsButtons extends React.Component {
       case 'saved+poweroff':
         //start|delete
         buttons.push(deleteButton);
+        buttons.push(startButton);
+
         break;
       case 'saved+exited':
         //start??|delete
         buttons.push(deleteButton);
+        buttons.push(startButton);
         break;
       case 'builded':
         //builded=|delete
@@ -82,7 +88,6 @@ export default class ActionsButtons extends React.Component {
 
   edit = () => {
     console.log('edit');
-    // this.props.open();
     this.props.data._action = 'edit';
     this.props.open(this.props.data);
   }
@@ -90,12 +95,9 @@ export default class ActionsButtons extends React.Component {
 
 class DeleteButton extends React.Component {
   render() {
-    let cellStyle = {
-      border: '1px solid black'
-    };
+
     return (
-      <Button bsStyle="danger" bsSize={actionButtonSize}><Glyphicon glyph="trash"
-                                                                    onClick={this.sendDelete.bind(this, this.props.title)}/></Button>
+      <Button bsStyle="danger" bsSize={actionButtonSize}><Glyphicon glyph="trash" onClick={this.sendDelete.bind(this, this.props.title)}/></Button>
     );
   }
 
@@ -251,5 +253,61 @@ class RunButton extends React.Component {
           </Modal.Footer>
         </Modal>
       </Button>)
+  }
+}
+
+class PauseButton extends React.Component {
+  pause = () => {
+    const json={currentStatus:'running'};
+    xhr({
+      json,
+      method: 'put',
+      uri: baseUrl + '/v1/instances/' + this.props.data.uid
+
+    }, (err, resp, body) => {
+      this.props.getData();
+
+      if (resp.statusCode === 200) {
+        // this.setState({data: JSON.parse(body)});
+
+      } else {
+        console.log('Error updating instance');
+        console.log(err);
+      }
+    });
+  };
+
+  render() {
+    return (
+      <Button bsStyle="info" bsSize={actionButtonSize} onClick={this.pause}><Glyphicon glyph="pause" key={4}/></Button>
+    );
+  }
+}
+
+class StartButton extends React.Component {
+  resume = () => {
+    const json={currentStatus:'paused'};
+    xhr({
+      json,
+      method: 'put',
+      uri: baseUrl + '/v1/instances/' + this.props.data.uid
+
+    }, (err, resp, body) => {
+      this.props.getData();
+
+      if (resp.statusCode === 200) {
+        // this.setState({data: JSON.parse(body)});
+
+      } else {
+        console.log('Error updating instance');
+        console.log(err);
+      }
+    });
+  };
+
+  render() {
+    return (
+      <Button bsStyle="info" bsSize={actionButtonSize} onClick={this.resume}><Glyphicon glyph="play" key={4}/></Button>
+    );
   }
 }
