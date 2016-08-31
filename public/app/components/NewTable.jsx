@@ -118,10 +118,10 @@ class NewTable extends React.Component {
       <div>
         <Panel header={headerContent} bsStyle='info'>
           <TableHeader>
-            <TableCell>Type</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Actions</TableCell>
+            <TableCell col={2}>Type</TableCell>
+            <TableCell col={4}>Name</TableCell>
+            <TableCell col={3}>Status</TableCell>
+            <TableCell col={3}>Actions</TableCell>
           </TableHeader>
           {rowNodes}
         </Panel>
@@ -198,6 +198,16 @@ class TableRow extends React.Component {
     let buildLog = '';
     let inspection = {};
     let expandedRowContent;
+    let icon;
+    //if (type === 'docker') { icon = <img src="https://www.docker.com/favicons/favicon-32x32.png">; }else{ icon = <img src="https://www.vagrantup.com/assets/images/favicon-d7af32eb.png">; }
+    if (type === 'docker') {
+      icon = (<img src="http://2.bp.blogspot.com/-7mObhiF1oQU/Vesm1knXbkI/AAAAAAAADzo/ka_mfLsOBDw/s1600/docker.png" alt="docker" className="typeIcon"/>);
+    } else {
+      icon = (
+        <img src="https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2014/11/1415685451vagrant-1.png" alt="vagrant" className="typeIcon"/>);
+
+    }
+
     if (this.props.title === 'Images') {
       if (type === 'docker') {
         const __ret = this.generateDockerRows(name, inspection, build, log, buildLog);
@@ -220,9 +230,7 @@ class TableRow extends React.Component {
       }
     } else if (this.props.title === 'Instances') {
       console.log('instance', this.props.data);
-
-        name = this.props.data.runConfig.name;
-
+      name = this.props.data.runConfig.name;
     }
 
 
@@ -234,10 +242,10 @@ class TableRow extends React.Component {
               open: !this.state.open
             })
         }}>
-          <TableCell>{type}</TableCell>
-          <TableCell>{name}</TableCell>
-          <TableCell>{status}</TableCell>
-          <TableCell id='ignoreExpansion' onClick={() => this.setState({open: false})}>
+          <TableCell col={2}>{icon}</TableCell>
+          <TableCell col={4}>{name}</TableCell>
+          <TableCell col={3}>{status}</TableCell>
+          <TableCell col={3} id='ignoreExpansion' onClick={() => this.setState({open: false})}>
             <ActionsButtons title={this.props.title} data={this.props.data} getData={this.props.getData}
                             open={this.props.open}/>
           </TableCell>
@@ -302,10 +310,11 @@ class Scroller extends React.Component {
 class TableCell extends React.Component {
   render() {
     let cellStyle = {
-      border: '1px solid black'
+      borderTop: '1px solid black'
     };
+    // cellStyle={};
     return (
-      <Col xs={3} style={cellStyle}>{this.props.children}</Col>
+      <Col xs={this.props.col} style={cellStyle}>{this.props.children}</Col>
     );
   }
 }

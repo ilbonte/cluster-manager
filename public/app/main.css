@@ -3,6 +3,12 @@ body {
 
   font-family: sans-serif;
 }
+
 div.modal-lg{
   width: 90%;
+}
+
+.typeIcon{
+    height:25px;
+    max-width:80px;
 }
