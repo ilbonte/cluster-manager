@@ -103,7 +103,7 @@ class NewTable extends React.Component {
               </Modal.Header>
               <ModalContent type={this.state.selectedType} onHide={this.close} getData={this.getData}
                             itemData={this.state.itemData}
-                            data={this.state.data.filter(item => item.type === 'docker' && (item.status === 'saved+builded' || item.status === 'saved'))}/>
+                            data={this.state.data.filter(item => item.type === 'docker' && (item.status === 'saved+built' || item.status === 'saved'))}/>
             </Modal>
           </Col>
         </Row>

@@ -33,8 +33,8 @@ export default class ActionsButtons extends React.Component {
         buttons.push(editButton);
         buttons.push(deleteButton);
         break;
-      case 'saved+builded':
-        //saved+builded=run|duplicate|edit|delete
+      case 'saved+built':
+        //saved+built=run|duplicate|edit|delete
         buttons.push(runButton);
         buttons.push(duplicateButton);
         buttons.push(editButton);
@@ -68,8 +68,8 @@ export default class ActionsButtons extends React.Component {
         buttons.push(deleteButton);
         buttons.push(startButton);
         break;
-      case 'builded':
-        //builded=|delete
+      case 'built':
+        //built=|delete
         if (this.props.data.RepoTags) {
           if (this.props.data.RepoTags.length === 1) {
             buttons.push(deleteButton);
@@ -107,7 +107,7 @@ class DeleteButton extends React.Component {
   sendDelete = (title) => {
     let json = {};
     if (this.props.data.RepoTags) {
-      //if only builded
+      //if only built
       if (this.props.data.RepoTags.length === 1) {
         json.name = this.props.data.RepoTags[0];
       }
