@@ -475,7 +475,7 @@ export default class ModalContent extends React.Component {
                            }}/> </FormGroup>{'   '}
             <a href="https://atlas.hashicorp.com/boxes/search?provider=virtualbox" target="_blank">search</a>
           </Form>
-          <Accordion >
+          <Accordion>
             <Panel eventKey="2" header="Network options">
               <Row>
                 <Col xs={4}>
@@ -511,7 +511,7 @@ export default class ModalContent extends React.Component {
               </Row>
             </Panel>
           </Accordion>
-          <Accordion >
+          <Accordion>
             <Panel eventKey="3" header="Provisions options">
               <Row>
                 <Col xs={4}>

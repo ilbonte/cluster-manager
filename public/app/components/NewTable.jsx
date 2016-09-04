@@ -201,10 +201,12 @@ class TableRow extends React.Component {
     let icon;
     //if (type === 'docker') { icon = <img src="https://www.docker.com/favicons/favicon-32x32.png">; }else{ icon = <img src="https://www.vagrantup.com/assets/images/favicon-d7af32eb.png">; }
     if (type === 'docker') {
-      icon = (<img src="http://2.bp.blogspot.com/-7mObhiF1oQU/Vesm1knXbkI/AAAAAAAADzo/ka_mfLsOBDw/s1600/docker.png" alt="docker" className="typeIcon"/>);
+      icon = (<img src="http://2.bp.blogspot.com/-7mObhiF1oQU/Vesm1knXbkI/AAAAAAAADzo/ka_mfLsOBDw/s1600/docker.png"
+                   alt="docker" className="typeIcon"/>);
     } else {
       icon = (
-        <img src="https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2014/11/1415685451vagrant-1.png" alt="vagrant" className="typeIcon"/>);
+        <img src="https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2014/11/1415685451vagrant-1.png" alt="vagrant"
+             className="typeIcon"/>);
 
     }
 
@@ -215,18 +217,31 @@ class TableRow extends React.Component {
         inspection = __ret.inspection;
         build = __ret.build;
         buildLog = __ret.buildLog;
-        expandedRowContent = (<div><Col xs={6}>
+        expandedRowContent = (<div><Col xs={12}>
           <h3>Build Steps</h3>
           <pre style={{maxHeight: '300px'}}>{build}</pre>
         </Col>
           <Col xs={12}>
             <h3>Build log</h3>
-            <Scroller >{buildLog}</Scroller>
+            <Scroller>{buildLog}</Scroller>
           </Col>
           <Col xs={12}>
             <h3>Image Inspect Details</h3>
             <Inspector expandLevel={0} data={inspection}/>
           </Col></div>);
+      } else if (type === 'vagrant') {
+        if(status==='saved+built'){
+          build=this.props.data.config.build;
+        }
+        expandedRowContent = (
+          <div>
+            <Col xs={12}>
+              <h3>Build Steps</h3>
+              <pre style={{maxHeight: '300px'}}>{build}</pre>
+            </Col>
+
+          </div>
+        );
       }
     } else if (this.props.title === 'Instances') {
       console.log('instance', this.props.data);
